@@ -2,24 +2,23 @@
   "meta": {
     "system": "Cyberpunk Red",
     "systemCn": "赛博朋克红",
-    "version": "2.0",
-    "note": "基于标准自动卡模板，示例数据为马达夫(御者)"
+    "version": "2.2",
+    "uploaded": true,
+    "uploadedAt": "2026-08-01T18:43:44.223Z"
   },
   "basic": {
+    "玩家": "小吉",
     "姓名": "马达夫",
-    "年龄": 26,
     "外号": "御者",
+    "年龄": 26,
     "性别": "男",
     "故乡": "印度",
-    "现居地": "夜之城",
-    "居住水平": "居住水平",
-    "居住花销": 0,
-    "食物水平": "食物水平",
-    "食物花销": 0,
+    "等级": 4,
+    "声望": 3,
+    "原生家庭": "",
     "职业名": "技工",
-    "职业能力": "能工巧匠",
     "职业等级": 4,
-    "复合职业": "复合职业"
+    "职业能力": "能工巧匠"
   },
   "stats": {
     "智力": 8,
@@ -28,659 +27,1307 @@
     "技术": 8,
     "酷": 6,
     "意志": 5,
+    "运气": 5,
     "移速": 5,
     "体格": 5,
-    "共情": 6,
-    "运气": 5
+    "共情": 6
   },
   "derived": {
-    "幸运值": 0.0,
-    "移动距离": 0.0,
     "生命值": 35,
     "人性": 55,
     "可用点数": 62,
     "剩余点数": 0,
-    "技能可用点数": 86,
-    "技能剩余点数": 60
-  },
-  "armorTrack": {
-    "头部_阻滞": 0.0,
-    "头部_生命值": 0.0,
-    "头部_死亡豁免": 0.0,
-    "头部_重伤阈值": null,
-    "头部_生命体征": null,
-    "躯干_阻滞": 11
+    "技能可用点数": 0,
+    "技能剩余点数": 0
   },
   "skills": {
-    "left": [
+    "groups": [
       {
-        "category": "感官类技能",
+        "category": "感官技能",
         "items": [
           {
             "name": "专注",
-            "sub": null,
-            "base": 2.0,
-            "first": 0,
-            "now": 2.0,
-            "result": 7
+            "points": 2,
+            "total": 7,
+            "x2": false,
+            "sub": []
           },
           {
-            "name": "藏匿",
-            "sub": null,
-            "base": 0.0,
-            "first": 0,
-            "now": 4,
-            "result": 12
+            "name": "隐藏/发现物品",
+            "points": 4,
+            "total": 12,
+            "x2": false,
+            "sub": []
           },
           {
             "name": "唇语",
-            "sub": null,
-            "base": 0.0,
-            "first": 0,
-            "now": 0.0,
-            "result": 8
+            "points": 0,
+            "total": 8,
+            "x2": false,
+            "sub": []
           },
           {
             "name": "察觉",
-            "sub": null,
-            "base": 2.0,
-            "first": 0,
-            "now": 6,
-            "result": 14
+            "points": 4,
+            "total": 14,
+            "x2": false,
+            "sub": []
           },
           {
             "name": "追踪",
-            "sub": null,
-            "base": 0.0,
-            "first": 0,
-            "now": 0.0,
-            "result": 8
+            "points": 0,
+            "total": 8,
+            "x2": false,
+            "sub": []
           }
         ]
       },
       {
-        "category": "体魄类技能",
+        "category": "身体技能",
         "items": [
           {
             "name": "运动",
-            "sub": null,
-            "base": 2.0,
-            "first": 0,
-            "now": 2.0,
-            "result": 8
+            "points": 2,
+            "total": 8,
+            "x2": false,
+            "sub": []
           },
           {
-            "name": "柔术",
-            "sub": null,
-            "base": 0.0,
-            "first": 0,
-            "now": 0.0,
-            "result": 6
+            "name": "柔韧",
+            "points": 0,
+            "total": 6,
+            "x2": false,
+            "sub": []
           },
           {
             "name": "舞蹈",
-            "sub": null,
-            "base": 0.0,
-            "first": 0,
-            "now": 0.0,
-            "result": 6
+            "points": 0,
+            "total": 6,
+            "x2": false,
+            "sub": []
           },
           {
             "name": "忍耐",
-            "sub": null,
-            "base": 0.0,
-            "first": 0,
-            "now": 0.0,
-            "result": 5
+            "points": 0,
+            "total": 5,
+            "x2": false,
+            "sub": []
           },
           {
-            "name": "折磨/药物耐受",
-            "sub": null,
-            "base": 0.0,
-            "first": 0,
-            "now": 0.0,
-            "result": 5
+            "name": "抗折磨/耐药",
+            "points": 0,
+            "total": 5,
+            "x2": false,
+            "sub": []
           },
           {
             "name": "潜行",
-            "sub": null,
-            "base": 2.0,
-            "first": 0,
-            "now": 2.0,
-            "result": 8
+            "points": 2,
+            "total": 8,
+            "x2": false,
+            "sub": []
           }
         ]
       },
       {
-        "category": "操控类技能",
+        "category": "操作技能",
         "items": [
           {
-            "name": "地面载具驾驶",
-            "sub": null,
-            "base": 0.0,
-            "first": 0,
-            "now": 6,
-            "result": 14
+            "name": "陆地载具",
+            "points": 6,
+            "total": 14,
+            "x2": false,
+            "sub": []
           },
           {
-            "name": "空中载具驾驶",
-            "sub": null,
-            "base": 0.0,
-            "first": 0,
-            "now": 0.0,
-            "result": 0
+            "name": "空中载具",
+            "points": 0,
+            "total": 8,
+            "x2": true,
+            "sub": []
           },
           {
-            "name": "海上载具驾驶",
-            "sub": null,
-            "base": 0.0,
-            "first": 0,
-            "now": 0.0,
-            "result": 8
+            "name": "水上载具",
+            "points": 0,
+            "total": 8,
+            "x2": false,
+            "sub": []
           },
           {
-            "name": "骑乘",
-            "sub": null,
-            "base": 0.0,
-            "first": 0,
-            "now": 0.0,
-            "result": 8
+            "name": "骑术",
+            "points": 0,
+            "total": 8,
+            "x2": false,
+            "sub": []
           }
         ]
       },
       {
-        "category": "教育类技能",
+        "category": "表演技能",
         "items": [
           {
-            "name": "会计学",
-            "sub": null,
-            "base": 0.0,
-            "first": 0,
-            "now": 0.0,
-            "result": 8
+            "name": "表演",
+            "points": 0,
+            "total": 6,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "乐器使用",
+            "points": 0,
+            "total": 8,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "护甲",
+            "points": 0,
+            "total": 0,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "头",
+            "points": 0,
+            "total": 0,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "身",
+            "points": 0,
+            "total": 11,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "盾",
+            "points": 0,
+            "total": 0,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "武器",
+            "points": 0,
+            "total": 0,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "萨瓦纳鹰",
+            "points": 0,
+            "total": 0,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "自律型AI“莱莎”",
+            "points": 0,
+            "total": 0,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "大龙“卫士”卡宾枪",
+            "points": 0,
+            "total": 0,
+            "x2": false,
+            "sub": []
+          }
+        ]
+      },
+      {
+        "category": "教育技能",
+        "items": [
+          {
+            "name": "会计",
+            "points": 0,
+            "total": 8,
+            "x2": false,
+            "sub": []
           },
           {
             "name": "驯兽",
-            "sub": null,
-            "base": 0.0,
-            "first": 0,
-            "now": 0.0,
-            "result": 8
+            "points": 0,
+            "total": 8,
+            "x2": false,
+            "sub": []
           },
           {
-            "name": "官产事故",
-            "sub": null,
-            "base": 0.0,
-            "first": 0,
-            "now": 0.0,
-            "result": 8
+            "name": "官场",
+            "points": 0,
+            "total": 8,
+            "x2": false,
+            "sub": []
           },
           {
-            "name": "商学",
-            "sub": null,
-            "base": 0.0,
-            "first": 0,
-            "now": 0.0,
-            "result": 8
+            "name": "商务",
+            "points": 0,
+            "total": 8,
+            "x2": false,
+            "sub": []
           },
           {
             "name": "写作",
-            "sub": null,
-            "base": 0.0,
-            "first": 0,
-            "now": 0.0,
-            "result": 8
+            "points": 0,
+            "total": 8,
+            "x2": false,
+            "sub": []
           },
           {
             "name": "犯罪学",
-            "sub": null,
-            "base": 0.0,
-            "first": 0,
-            "now": 4,
-            "result": 12
+            "points": 4,
+            "total": 12,
+            "x2": false,
+            "sub": []
           },
           {
             "name": "密码学",
-            "sub": null,
-            "base": 0.0,
-            "first": 0,
-            "now": 0.0,
-            "result": 8
+            "points": 0,
+            "total": 8,
+            "x2": false,
+            "sub": []
           },
           {
             "name": "推理",
-            "sub": null,
-            "base": 0.0,
-            "first": 0,
-            "now": 4,
-            "result": 12
+            "points": 4,
+            "total": 12,
+            "x2": false,
+            "sub": []
           },
           {
             "name": "通识",
-            "sub": null,
-            "base": 2.0,
-            "first": 0,
-            "now": 2,
-            "result": 10
+            "points": 2,
+            "total": 10,
+            "x2": false,
+            "sub": []
           },
           {
             "name": "赌博",
-            "sub": null,
-            "base": 0.0,
-            "first": 0,
-            "now": 0.0,
-            "result": 8
+            "points": 0,
+            "total": 8,
+            "x2": false,
+            "sub": []
           },
           {
             "name": "图书馆检索",
-            "sub": null,
-            "base": 0.0,
-            "first": 0,
-            "now": 4,
-            "result": 12
+            "points": 4,
+            "total": 12,
+            "x2": false,
+            "sub": []
           },
           {
             "name": "科学",
-            "sub": null,
-            "base": 0.0,
-            "first": 0,
-            "now": 0.0,
-            "result": 8
+            "points": 0,
+            "total": 8,
+            "x2": false,
+            "sub": []
           },
           {
             "name": "战术",
-            "sub": null,
-            "base": 0.0,
-            "first": 0,
-            "now": 0.0,
-            "result": 8
+            "points": 0,
+            "total": 8,
+            "x2": false,
+            "sub": []
           },
           {
             "name": "野外生存",
-            "sub": null,
-            "base": 0.0,
-            "first": 0,
-            "now": 0.0,
-            "result": 8
+            "points": 0,
+            "total": 8,
+            "x2": false,
+            "sub": []
           },
           {
-            "name": "口语表达",
-            "sub": "街头俚语",
-            "base": 2.0,
-            "first": 0,
-            "now": 4,
-            "result": 12
+            "name": "语言",
+            "points": 0,
+            "total": 8,
+            "x2": false,
+            "sub": [
+              {
+                "name": "街头俚语",
+                "points": 2,
+                "total": 10
+              },
+              {
+                "name": "母语",
+                "points": 0,
+                "total": 12
+              }
+            ]
           },
           {
-            "name": "地方专家",
-            "sub": "你的家",
-            "base": 2.0,
-            "first": 0,
-            "now": 2,
-            "result": 10
+            "name": "本地专家",
+            "points": 0,
+            "total": 8,
+            "x2": false,
+            "sub": [
+              {
+                "name": "你的家",
+                "points": 2,
+                "total": 10
+              }
+            ]
           }
         ]
       },
       {
-        "category": "战斗类技能",
+        "category": "战斗技能",
         "items": [
           {
             "name": "搏击",
-            "sub": null,
-            "base": 2.0,
-            "first": 0,
-            "now": 2.0,
-            "result": 8
+            "points": 2,
+            "total": 8,
+            "x2": false,
+            "sub": []
           },
           {
             "name": "闪避",
-            "sub": null,
-            "base": 2.0,
-            "first": 0,
-            "now": 4,
-            "result": 12
+            "points": 6,
+            "total": 12,
+            "x2": false,
+            "sub": []
           },
           {
-            "name": "武术",
-            "sub": null,
-            "base": 0.0,
-            "first": 0,
-            "now": 0.0,
-            "result": 0
+            "name": "",
+            "points": 0,
+            "total": 6,
+            "x2": true,
+            "sub": []
           },
           {
             "name": "近战武器",
-            "sub": null,
-            "base": 0.0,
-            "first": 0,
-            "now": 0.0,
-            "result": 6
-          }
-        ]
-      }
-    ],
-    "right": [
-      {
-        "category": "表演类技能",
-        "items": [
-          {
-            "name": "扮演",
-            "base": 0.0,
-            "first": 0,
-            "now": 0.0,
-            "result": 6
-          },
-          {
-            "name": "乐器演奏",
-            "base": 0.0,
-            "first": 0,
-            "now": 0.0,
-            "result": 8
+            "points": 0,
+            "total": 6,
+            "x2": false,
+            "sub": []
           }
         ]
       },
       {
-        "category": "远程武器类技能",
+        "category": "远程武器技能",
         "items": [
           {
-            "name": "弓术",
-            "base": 0.0,
-            "first": 0,
-            "now": 0.0,
-            "result": 8
+            "name": "弓道",
+            "points": 0,
+            "total": 8,
+            "x2": false,
+            "sub": []
           },
           {
             "name": "自动武器",
-            "base": 0.0,
-            "first": 0,
-            "now": 0.0,
-            "result": 8
+            "points": 0,
+            "total": 8,
+            "x2": true,
+            "sub": []
           },
           {
             "name": "手枪",
-            "base": 0.0,
-            "first": 0,
-            "now": 0.0,
-            "result": 8
+            "points": 0,
+            "total": 8,
+            "x2": false,
+            "sub": []
           },
           {
             "name": "重武器",
-            "base": 0.0,
-            "first": 0,
-            "now": 0.0,
-            "result": 8
+            "points": 0,
+            "total": 8,
+            "x2": true,
+            "sub": []
           },
           {
-            "name": "长枪射击",
-            "base": 0.0,
-            "first": 0,
-            "now": 6,
-            "result": 14
+            "name": "长管武器",
+            "points": 6,
+            "total": 14,
+            "x2": false,
+            "sub": []
           }
         ]
       },
       {
-        "category": "社交类技能",
+        "category": "社交技能",
         "items": [
           {
             "name": "贿赂",
-            "base": 0.0,
-            "first": 0,
-            "now": 0.0,
-            "result": 6
+            "points": 0,
+            "total": 6,
+            "x2": false,
+            "sub": []
           },
           {
             "name": "交谈",
-            "base": 2.0,
-            "first": 0,
-            "now": 2.0,
-            "result": 8
+            "points": 2,
+            "total": 8,
+            "x2": false,
+            "sub": []
           },
           {
             "name": "察言观色",
-            "base": 2.0,
-            "first": 0,
-            "now": 2.0,
-            "result": 8
+            "points": 2,
+            "total": 8,
+            "x2": false,
+            "sub": []
           },
           {
             "name": "审讯",
-            "base": 0.0,
-            "first": 0,
-            "now": 0.0,
-            "result": 0
+            "points": 0,
+            "total": 0,
+            "x2": false,
+            "sub": []
           },
           {
             "name": "说服",
-            "base": 2.0,
-            "first": 0,
-            "now": 2.0,
-            "result": 8
+            "points": 2,
+            "total": 8,
+            "x2": false,
+            "sub": []
           },
           {
             "name": "个人装扮",
-            "base": 0.0,
-            "first": 0,
-            "now": 0.0,
-            "result": 6
+            "points": 0,
+            "total": 6,
+            "x2": false,
+            "sub": []
           },
           {
             "name": "街头智慧",
-            "base": 0.0,
-            "first": 0,
-            "now": 0.0,
-            "result": 6
+            "points": 0,
+            "total": 6,
+            "x2": false,
+            "sub": []
           },
           {
             "name": "交易",
-            "base": 0.0,
-            "first": 0,
-            "now": 0.0,
-            "result": 6
+            "points": 0,
+            "total": 6,
+            "x2": false,
+            "sub": []
           },
           {
             "name": "服饰与风格",
-            "base": 0.0,
-            "first": 0,
-            "now": 0.0,
-            "result": 6
+            "points": 0,
+            "total": 6,
+            "x2": false,
+            "sub": []
           }
         ]
       },
       {
-        "category": "技术类技能",
+        "category": "技术技能",
         "items": [
           {
             "name": "空中载具技术",
-            "base": 0.0,
-            "first": 0,
-            "now": 0.0,
-            "result": 8
+            "points": 0,
+            "total": 8,
+            "x2": false,
+            "sub": []
           },
           {
             "name": "基础技术",
-            "base": 0.0,
-            "first": 0,
-            "now": 6,
-            "result": 14
+            "points": 6,
+            "total": 14,
+            "x2": false,
+            "sub": []
           },
           {
             "name": "赛博技术",
-            "base": 0.0,
-            "first": 0,
-            "now": 6,
-            "result": 14
+            "points": 6,
+            "total": 14,
+            "x2": false,
+            "sub": []
           },
           {
             "name": "爆破学",
-            "base": 0.0,
-            "first": 0,
-            "now": 0.0,
-            "result": 8
+            "points": 0,
+            "total": 8,
+            "x2": true,
+            "sub": []
           },
           {
             "name": "电子/安全技术",
-            "base": 0.0,
-            "first": 0,
-            "now": 0.0,
-            "result": 8
+            "points": 6,
+            "total": 11,
+            "x2": true,
+            "sub": []
           },
           {
             "name": "急救",
-            "base": 2.0,
-            "first": 0,
-            "now": 2.0,
-            "result": 8
+            "points": 2,
+            "total": 10,
+            "x2": false,
+            "sub": []
           },
           {
             "name": "强化急救",
-            "base": 0.0,
-            "first": 0,
-            "now": 0.0,
-            "result": 8
+            "points": 0,
+            "total": 8,
+            "x2": true,
+            "sub": []
           },
           {
             "name": "伪造",
-            "base": 0.0,
-            "first": 0,
-            "now": 0.0,
-            "result": 8
+            "points": 4,
+            "total": 12,
+            "x2": false,
+            "sub": []
           },
           {
             "name": "地面载具技术",
-            "base": 0.0,
-            "first": 0,
-            "now": 0.0,
-            "result": 8
+            "points": 4,
+            "total": 12,
+            "x2": false,
+            "sub": []
           },
           {
-            "name": "绘画/雕刻/速写",
-            "base": 0.0,
-            "first": 0,
-            "now": 0.0,
-            "result": 8
+            "name": "绘画/雕刻/摄影",
+            "points": 0,
+            "total": 8,
+            "x2": false,
+            "sub": []
           },
           {
             "name": "摄影/摄像",
-            "base": 0.0,
-            "first": 0,
-            "now": 0.0,
-            "result": 8
+            "points": 0,
+            "total": 8,
+            "x2": false,
+            "sub": []
           },
           {
             "name": "开锁",
-            "base": 0.0,
-            "first": 0,
-            "now": 0.0,
-            "result": 8
+            "points": 0,
+            "total": 8,
+            "x2": false,
+            "sub": []
           },
           {
             "name": "扒窃",
-            "base": 0.0,
-            "first": 0,
-            "now": 0.0,
-            "result": 8
+            "points": 0,
+            "total": 8,
+            "x2": false,
+            "sub": []
           },
           {
             "name": "海洋载具技术",
-            "base": 0.0,
-            "first": 0,
-            "now": 0.0,
-            "result": 8
+            "points": 0,
+            "total": 8,
+            "x2": false,
+            "sub": []
           },
           {
             "name": "武器技术",
-            "base": 0.0,
-            "first": 0,
-            "now": 0.0,
-            "result": 8
+            "points": 0,
+            "total": 8,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "可用点数",
+            "points": 0,
+            "total": 0,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "加点列浅红色标记的为必须点的基础加点，技能列红色[x2]的在加点列+2才会+1技能基准",
+            "points": 0,
+            "total": 0,
+            "x2": false,
+            "sub": []
           }
         ]
       }
-    ]
+    ],
+    "left": [
+      {
+        "category": "感官技能",
+        "items": [
+          {
+            "name": "专注",
+            "points": 2,
+            "total": 7,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "隐藏/发现物品",
+            "points": 4,
+            "total": 12,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "唇语",
+            "points": 0,
+            "total": 8,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "察觉",
+            "points": 4,
+            "total": 14,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "追踪",
+            "points": 0,
+            "total": 8,
+            "x2": false,
+            "sub": []
+          }
+        ]
+      },
+      {
+        "category": "身体技能",
+        "items": [
+          {
+            "name": "运动",
+            "points": 2,
+            "total": 8,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "柔韧",
+            "points": 0,
+            "total": 6,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "舞蹈",
+            "points": 0,
+            "total": 6,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "忍耐",
+            "points": 0,
+            "total": 5,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "抗折磨/耐药",
+            "points": 0,
+            "total": 5,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "潜行",
+            "points": 2,
+            "total": 8,
+            "x2": false,
+            "sub": []
+          }
+        ]
+      },
+      {
+        "category": "操作技能",
+        "items": [
+          {
+            "name": "陆地载具",
+            "points": 6,
+            "total": 14,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "空中载具",
+            "points": 0,
+            "total": 8,
+            "x2": true,
+            "sub": []
+          },
+          {
+            "name": "水上载具",
+            "points": 0,
+            "total": 8,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "骑术",
+            "points": 0,
+            "total": 8,
+            "x2": false,
+            "sub": []
+          }
+        ]
+      },
+      {
+        "category": "表演技能",
+        "items": [
+          {
+            "name": "表演",
+            "points": 0,
+            "total": 6,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "乐器使用",
+            "points": 0,
+            "total": 8,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "护甲",
+            "points": 0,
+            "total": 0,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "头",
+            "points": 0,
+            "total": 0,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "身",
+            "points": 0,
+            "total": 11,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "盾",
+            "points": 0,
+            "total": 0,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "武器",
+            "points": 0,
+            "total": 0,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "萨瓦纳鹰",
+            "points": 0,
+            "total": 0,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "自律型AI“莱莎”",
+            "points": 0,
+            "total": 0,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "大龙“卫士”卡宾枪",
+            "points": 0,
+            "total": 0,
+            "x2": false,
+            "sub": []
+          }
+        ]
+      },
+      {
+        "category": "教育技能",
+        "items": [
+          {
+            "name": "会计",
+            "points": 0,
+            "total": 8,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "驯兽",
+            "points": 0,
+            "total": 8,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "官场",
+            "points": 0,
+            "total": 8,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "商务",
+            "points": 0,
+            "total": 8,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "写作",
+            "points": 0,
+            "total": 8,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "犯罪学",
+            "points": 4,
+            "total": 12,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "密码学",
+            "points": 0,
+            "total": 8,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "推理",
+            "points": 4,
+            "total": 12,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "通识",
+            "points": 2,
+            "total": 10,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "赌博",
+            "points": 0,
+            "total": 8,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "图书馆检索",
+            "points": 4,
+            "total": 12,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "科学",
+            "points": 0,
+            "total": 8,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "战术",
+            "points": 0,
+            "total": 8,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "野外生存",
+            "points": 0,
+            "total": 8,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "语言",
+            "points": 0,
+            "total": 8,
+            "x2": false,
+            "sub": [
+              {
+                "name": "街头俚语",
+                "points": 2,
+                "total": 10
+              },
+              {
+                "name": "母语",
+                "points": 0,
+                "total": 12
+              }
+            ]
+          },
+          {
+            "name": "本地专家",
+            "points": 0,
+            "total": 8,
+            "x2": false,
+            "sub": [
+              {
+                "name": "你的家",
+                "points": 2,
+                "total": 10
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "category": "战斗技能",
+        "items": [
+          {
+            "name": "搏击",
+            "points": 2,
+            "total": 8,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "闪避",
+            "points": 6,
+            "total": 12,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "",
+            "points": 0,
+            "total": 6,
+            "x2": true,
+            "sub": []
+          },
+          {
+            "name": "近战武器",
+            "points": 0,
+            "total": 6,
+            "x2": false,
+            "sub": []
+          }
+        ]
+      },
+      {
+        "category": "远程武器技能",
+        "items": [
+          {
+            "name": "弓道",
+            "points": 0,
+            "total": 8,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "自动武器",
+            "points": 0,
+            "total": 8,
+            "x2": true,
+            "sub": []
+          },
+          {
+            "name": "手枪",
+            "points": 0,
+            "total": 8,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "重武器",
+            "points": 0,
+            "total": 8,
+            "x2": true,
+            "sub": []
+          },
+          {
+            "name": "长管武器",
+            "points": 6,
+            "total": 14,
+            "x2": false,
+            "sub": []
+          }
+        ]
+      },
+      {
+        "category": "社交技能",
+        "items": [
+          {
+            "name": "贿赂",
+            "points": 0,
+            "total": 6,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "交谈",
+            "points": 2,
+            "total": 8,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "察言观色",
+            "points": 2,
+            "total": 8,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "审讯",
+            "points": 0,
+            "total": 0,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "说服",
+            "points": 2,
+            "total": 8,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "个人装扮",
+            "points": 0,
+            "total": 6,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "街头智慧",
+            "points": 0,
+            "total": 6,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "交易",
+            "points": 0,
+            "total": 6,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "服饰与风格",
+            "points": 0,
+            "total": 6,
+            "x2": false,
+            "sub": []
+          }
+        ]
+      },
+      {
+        "category": "技术技能",
+        "items": [
+          {
+            "name": "空中载具技术",
+            "points": 0,
+            "total": 8,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "基础技术",
+            "points": 6,
+            "total": 14,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "赛博技术",
+            "points": 6,
+            "total": 14,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "爆破学",
+            "points": 0,
+            "total": 8,
+            "x2": true,
+            "sub": []
+          },
+          {
+            "name": "电子/安全技术",
+            "points": 6,
+            "total": 11,
+            "x2": true,
+            "sub": []
+          },
+          {
+            "name": "急救",
+            "points": 2,
+            "total": 10,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "强化急救",
+            "points": 0,
+            "total": 8,
+            "x2": true,
+            "sub": []
+          },
+          {
+            "name": "伪造",
+            "points": 4,
+            "total": 12,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "地面载具技术",
+            "points": 4,
+            "total": 12,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "绘画/雕刻/摄影",
+            "points": 0,
+            "total": 8,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "摄影/摄像",
+            "points": 0,
+            "total": 8,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "开锁",
+            "points": 0,
+            "total": 8,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "扒窃",
+            "points": 0,
+            "total": 8,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "海洋载具技术",
+            "points": 0,
+            "total": 8,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "武器技术",
+            "points": 0,
+            "total": 8,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "可用点数",
+            "points": 0,
+            "total": 0,
+            "x2": false,
+            "sub": []
+          },
+          {
+            "name": "加点列浅红色标记的为必须点的基础加点，技能列红色[x2]的在加点列+2才会+1技能基准",
+            "points": 0,
+            "total": 0,
+            "x2": false,
+            "sub": []
+          }
+        ]
+      }
+    ],
+    "right": []
   },
-  "lifePath": {
-    "风格": "风格",
-    "区域": "印度",
-    "语言": "英语",
-    "服饰": "服饰",
-    "发型": "发型",
-    "信物": "信物",
-    "动机": "动机",
-    "个性": "豁达",
-    "最看重": "友谊",
-    "最在乎": "朋友翼月生的下落",
-    "观点": "观点",
-    "宝贝": "自律型AI\"莱莎\"",
-    "目标": "找到翼月生的下落",
-    "家庭背景": "家庭背景",
-    "原生家庭": "拥有哥哥和妹妹的幸福之家",
-    "童年环境": "虽有挫折，但总体幸福",
-    "家庭危机": "家庭危机"
+  "armor": {
+    "head": {
+      "sp": 0,
+      "value": 0
+    },
+    "body": {
+      "sp": 0,
+      "value": 11
+    },
+    "shield": {
+      "sp": 0,
+      "value": 0
+    }
   },
   "weapons": [
     {
-      "name": "大龙\"卫士\"卡宾枪",
-      "count": 1,
-      "skill": "自动武器",
-      "damage": "2D10×4 (5.56中)",
-      "ammo": "单",
-      "rof": 4,
-      "hands": 2,
-      "conceal": "可隐藏",
-      "price": 850,
-      "note": "大龙为贴身安保工作人员研制的大威力卡宾枪。像微型冲锋枪一样短小精悍，却具备突击步枪的火力。射程DV表使用冲锋枪的DV。"
-    }
-  ],
-  "armor": [
+      "name": "自律型AI“莱莎”",
+      "type": "使魔",
+      "skill": "REZ 15",
+      "damage": "交互界面 3",
+      "ammo": 0,
+      "rof": 0,
+      "hands": 0,
+      "conceal": "智力 6",
+      "cost": 400,
+      "value": 0,
+      "notes": "“莱莎”是朋友翼月生留下的遗物，马达夫在朋友失踪前居住过的一处网络建筑里找到了“她”。但由于翼月生留下的安全锁，“她”的功能被安全锁限制为仅有初级使魔的水平。“莱莎”似乎将绝大部分跟翼月生相关的情报封锁了起来。当马达夫尝试从“莱莎”的数据库里寻找有关朋友的线索时，“莱莎”告诉 马达夫必须要找到翼月生使用过的安全密钥才能解锁数据库。“莱莎”在智能方面表现的如同一个真正的AI，每当马达夫问起“莱莎”的来历时，“她”总会沉默，而这种沉默似乎和荒版有关，这种时候马达夫总会感觉“她”就像一个活生生的人类。",
+      "accessories": []
+    },
     {
-      "type": "轻型装甲夹克",
-      "part": "躯干",
-      "desc": "日常穿着的轻型护甲",
-      "stopping": 11,
-      "penalty": 0,
-      "price": 100
+      "name": "大龙“卫士”卡宾枪",
+      "type": "突击步枪",
+      "skill": null,
+      "damage": null,
+      "ammo": 0,
+      "rof": 0,
+      "hands": 0,
+      "conceal": null,
+      "cost": 850,
+      "value": 850,
+      "notes": "",
+      "accessories": [
+        {
+          "name": "橡胶弹",
+          "desc": "伤害骰+1，穿甲等级固定为手枪级。使用这种弹药造成的伤害不会导致严重伤势和致命伤，也不能削减护甲。使用这种弹药将大于一点生命值的生物生命值降到零以下时，其保留一点生命。价格为原弹药的0.5倍",
+          "cost": 0
+        }
+      ]
     }
   ],
-  "fashion": [],
-  "funds": {
-    "现有资金": 2550,
-    "剩余资金": 2550,
-    "声望": 3
-  },
-  "cyberware": {
-    "left_eye": [
-      {
-        "slot": 0,
-        "name": "寻血猎犬义眼",
-        "facility": "诊所",
-        "desc": "人造眼睛，内置微光夜视仪(30m)，分析AI可分析30m内可疑物件。察觉+2",
-        "price": 300,
-        "humanity": 5
-      }
-    ],
-    "right_eye": [
-      {
-        "slot": 1.0,
-        "name": "名称",
-        "facility": "安装设施",
-        "desc": "描述和数据",
-        "price": 0,
-        "humanity": 0
-      }
-    ],
-    "cyberware_total_cost": 300,
-    "cyberware_total_humanity": 5
+  "cyberware": [
+    {
+      "base": "寻血猎犬",
+      "slot": 3,
+      "name": "",
+      "facility": "诊所",
+      "desc": "人造眼睛 每个赛博义眼拥有1个槽位。内置了微光夜视仪（30m距离），可以利用自带的分析AI分析30m内的可疑物件和兴趣点。察觉+2",
+      "cost": 300,
+      "value": 300,
+      "humanity": 5
+    }
+  ],
+  "cyberwareTotalCost": 300,
+  "cyberwareTotalHumanity": 5,
+  "lifePath": {
+    "风格": "",
+    "文化区域": "印度",
+    "母语": "英语",
+    "性格": "",
+    "发型": "",
+    "衣着风格": "",
+    "动机": "",
+    "个性": "豁达",
+    "最看重": "友谊",
+    "最在乎": "朋友翼月生的下落",
+    "观点": "",
+    "宝物": "自律型AI“莱莎”",
+    "目标": "找到翼月生的下落"
   },
   "friends": [
     {
       "name": "翼月生",
-      "relation": "挚友",
-      "desc": "马达夫的发小，堂哥关系。2078年在夜之城失踪，马达夫来寻回友人。"
+      "relationship": "挚友",
+      "description": "翼月生是马达夫的发小，两家基于亲戚关系来往密切。在血缘关系上，马达夫是翼月生的堂哥。两人从小形影不离，直到有一天翼月生说要脱离家庭去往夜之城，他们俩就再也没有见过了。2078年，翼月生在夜之城失踪，马达夫在焦急的同时决定代表两个家庭去寻回友人。于是马达夫在夜之城的冒险开始了。"
     }
   ],
   "enemies": [],
   "backstory": "马达夫生于一个印度的政治集团家庭，他的父母是印度北方邦的议员。他有一个哥哥和妹妹，而他的大哥被选为下一任政治领袖被培养。但这并不是说马达夫在家里就不受宠，相反他被全家人所喜爱，他生来自由的性格和他能看透未来般的慧眼使他超脱于世不似凡人。他的童年总是在和翼月生游山玩水中度过，而当他留在家中时，他有总会摆弄他车械库里那些工具和发明。他十分喜欢改装车，常常和朋友开着改装车去到山野里拉力。在他们疯玩的时候，翼月生有时会露出十分困扰的表情，而每当马达夫问起，他都会向他倾诉来自家庭的压力，马达夫则会鼓励他独立，去自己做自己向往的事。在不久后，翼月生离开了家庭和祖国，奔赴夜之城去寻找自己的志向。但还没等到他扬名立万的消息传来，翼月生便失去了踪迹。马达夫十分自责，他认为自己的鼓励是导致翼月生失踪的原因之一，为了不让两个家庭沉浸在失去亲人的悲痛之中，为了找回自己的挚友，马达夫选择来到美国开始了他在夜之城的冒险。",
+  "funds": {
+    "现有资金": 0,
+    "剩余资金": 0,
+    "声望": 3
+  },
   "bodyInjuries": [
     {
       "roll": 2,
@@ -891,6 +1538,8 @@
     "hpMax": 35,
     "humanity": 55,
     "humanityMax": 60,
-    "empathy": 6
-  }
+    "empathy": 6,
+    "reputation": 3
+  },
+  "id": "madhav"
 }
