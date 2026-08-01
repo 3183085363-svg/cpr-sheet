@@ -1,0 +1,15 @@
+{
+  "name": "赛博朋克红 · 角色卡",
+  "version": "2.0.0",
+  "manifest_version": 1,
+  "description": "完整版赛博朋克红(Cyberpunk Red)角色卡：属性/66技能/生命路径/武器护甲/义体/伤势表/精神状态/关系/背景。基于标准自动卡模板。",
+  "author": "小汤圆 × 红豆包",
+  "action": {
+    "title": "赛博朋克红 · 角色卡",
+    "icon": "./icon.svg",
+    "popover": "./",
+    "height": 760,
+    "width": 520
+  },
+  "permissions": []
+}

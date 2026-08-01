@@ -1,0 +1,896 @@
+{
+  "meta": {
+    "system": "Cyberpunk Red",
+    "systemCn": "赛博朋克红",
+    "version": "2.0",
+    "note": "基于标准自动卡模板，示例数据为马达夫(御者)"
+  },
+  "basic": {
+    "姓名": "马达夫",
+    "年龄": 26,
+    "外号": "御者",
+    "性别": "男",
+    "故乡": "印度",
+    "现居地": "夜之城",
+    "居住水平": "居住水平",
+    "居住花销": 0,
+    "食物水平": "食物水平",
+    "食物花销": 0,
+    "职业名": "技工",
+    "职业能力": "能工巧匠",
+    "职业等级": 4,
+    "复合职业": "复合职业"
+  },
+  "stats": {
+    "智力": 8,
+    "反应": 8,
+    "敏捷": 6,
+    "技术": 8,
+    "酷": 6,
+    "意志": 5,
+    "移速": 5,
+    "体格": 5,
+    "共情": 6,
+    "运气": 5
+  },
+  "derived": {
+    "幸运值": 0.0,
+    "移动距离": 0.0,
+    "生命值": 35,
+    "人性": 55,
+    "可用点数": 62,
+    "剩余点数": 0,
+    "技能可用点数": 86,
+    "技能剩余点数": 60
+  },
+  "armorTrack": {
+    "头部_阻滞": 0.0,
+    "头部_生命值": 0.0,
+    "头部_死亡豁免": 0.0,
+    "头部_重伤阈值": null,
+    "头部_生命体征": null,
+    "躯干_阻滞": 11
+  },
+  "skills": {
+    "left": [
+      {
+        "category": "感官类技能",
+        "items": [
+          {
+            "name": "专注",
+            "sub": null,
+            "base": 2.0,
+            "first": 0,
+            "now": 2.0,
+            "result": 7
+          },
+          {
+            "name": "藏匿",
+            "sub": null,
+            "base": 0.0,
+            "first": 0,
+            "now": 4,
+            "result": 12
+          },
+          {
+            "name": "唇语",
+            "sub": null,
+            "base": 0.0,
+            "first": 0,
+            "now": 0.0,
+            "result": 8
+          },
+          {
+            "name": "察觉",
+            "sub": null,
+            "base": 2.0,
+            "first": 0,
+            "now": 6,
+            "result": 14
+          },
+          {
+            "name": "追踪",
+            "sub": null,
+            "base": 0.0,
+            "first": 0,
+            "now": 0.0,
+            "result": 8
+          }
+        ]
+      },
+      {
+        "category": "体魄类技能",
+        "items": [
+          {
+            "name": "运动",
+            "sub": null,
+            "base": 2.0,
+            "first": 0,
+            "now": 2.0,
+            "result": 8
+          },
+          {
+            "name": "柔术",
+            "sub": null,
+            "base": 0.0,
+            "first": 0,
+            "now": 0.0,
+            "result": 6
+          },
+          {
+            "name": "舞蹈",
+            "sub": null,
+            "base": 0.0,
+            "first": 0,
+            "now": 0.0,
+            "result": 6
+          },
+          {
+            "name": "忍耐",
+            "sub": null,
+            "base": 0.0,
+            "first": 0,
+            "now": 0.0,
+            "result": 5
+          },
+          {
+            "name": "折磨/药物耐受",
+            "sub": null,
+            "base": 0.0,
+            "first": 0,
+            "now": 0.0,
+            "result": 5
+          },
+          {
+            "name": "潜行",
+            "sub": null,
+            "base": 2.0,
+            "first": 0,
+            "now": 2.0,
+            "result": 8
+          }
+        ]
+      },
+      {
+        "category": "操控类技能",
+        "items": [
+          {
+            "name": "地面载具驾驶",
+            "sub": null,
+            "base": 0.0,
+            "first": 0,
+            "now": 6,
+            "result": 14
+          },
+          {
+            "name": "空中载具驾驶",
+            "sub": null,
+            "base": 0.0,
+            "first": 0,
+            "now": 0.0,
+            "result": 0
+          },
+          {
+            "name": "海上载具驾驶",
+            "sub": null,
+            "base": 0.0,
+            "first": 0,
+            "now": 0.0,
+            "result": 8
+          },
+          {
+            "name": "骑乘",
+            "sub": null,
+            "base": 0.0,
+            "first": 0,
+            "now": 0.0,
+            "result": 8
+          }
+        ]
+      },
+      {
+        "category": "教育类技能",
+        "items": [
+          {
+            "name": "会计学",
+            "sub": null,
+            "base": 0.0,
+            "first": 0,
+            "now": 0.0,
+            "result": 8
+          },
+          {
+            "name": "驯兽",
+            "sub": null,
+            "base": 0.0,
+            "first": 0,
+            "now": 0.0,
+            "result": 8
+          },
+          {
+            "name": "官产事故",
+            "sub": null,
+            "base": 0.0,
+            "first": 0,
+            "now": 0.0,
+            "result": 8
+          },
+          {
+            "name": "商学",
+            "sub": null,
+            "base": 0.0,
+            "first": 0,
+            "now": 0.0,
+            "result": 8
+          },
+          {
+            "name": "写作",
+            "sub": null,
+            "base": 0.0,
+            "first": 0,
+            "now": 0.0,
+            "result": 8
+          },
+          {
+            "name": "犯罪学",
+            "sub": null,
+            "base": 0.0,
+            "first": 0,
+            "now": 4,
+            "result": 12
+          },
+          {
+            "name": "密码学",
+            "sub": null,
+            "base": 0.0,
+            "first": 0,
+            "now": 0.0,
+            "result": 8
+          },
+          {
+            "name": "推理",
+            "sub": null,
+            "base": 0.0,
+            "first": 0,
+            "now": 4,
+            "result": 12
+          },
+          {
+            "name": "通识",
+            "sub": null,
+            "base": 2.0,
+            "first": 0,
+            "now": 2,
+            "result": 10
+          },
+          {
+            "name": "赌博",
+            "sub": null,
+            "base": 0.0,
+            "first": 0,
+            "now": 0.0,
+            "result": 8
+          },
+          {
+            "name": "图书馆检索",
+            "sub": null,
+            "base": 0.0,
+            "first": 0,
+            "now": 4,
+            "result": 12
+          },
+          {
+            "name": "科学",
+            "sub": null,
+            "base": 0.0,
+            "first": 0,
+            "now": 0.0,
+            "result": 8
+          },
+          {
+            "name": "战术",
+            "sub": null,
+            "base": 0.0,
+            "first": 0,
+            "now": 0.0,
+            "result": 8
+          },
+          {
+            "name": "野外生存",
+            "sub": null,
+            "base": 0.0,
+            "first": 0,
+            "now": 0.0,
+            "result": 8
+          },
+          {
+            "name": "口语表达",
+            "sub": "街头俚语",
+            "base": 2.0,
+            "first": 0,
+            "now": 4,
+            "result": 12
+          },
+          {
+            "name": "地方专家",
+            "sub": "你的家",
+            "base": 2.0,
+            "first": 0,
+            "now": 2,
+            "result": 10
+          }
+        ]
+      },
+      {
+        "category": "战斗类技能",
+        "items": [
+          {
+            "name": "搏击",
+            "sub": null,
+            "base": 2.0,
+            "first": 0,
+            "now": 2.0,
+            "result": 8
+          },
+          {
+            "name": "闪避",
+            "sub": null,
+            "base": 2.0,
+            "first": 0,
+            "now": 4,
+            "result": 12
+          },
+          {
+            "name": "武术",
+            "sub": null,
+            "base": 0.0,
+            "first": 0,
+            "now": 0.0,
+            "result": 0
+          },
+          {
+            "name": "近战武器",
+            "sub": null,
+            "base": 0.0,
+            "first": 0,
+            "now": 0.0,
+            "result": 6
+          }
+        ]
+      }
+    ],
+    "right": [
+      {
+        "category": "表演类技能",
+        "items": [
+          {
+            "name": "扮演",
+            "base": 0.0,
+            "first": 0,
+            "now": 0.0,
+            "result": 6
+          },
+          {
+            "name": "乐器演奏",
+            "base": 0.0,
+            "first": 0,
+            "now": 0.0,
+            "result": 8
+          }
+        ]
+      },
+      {
+        "category": "远程武器类技能",
+        "items": [
+          {
+            "name": "弓术",
+            "base": 0.0,
+            "first": 0,
+            "now": 0.0,
+            "result": 8
+          },
+          {
+            "name": "自动武器",
+            "base": 0.0,
+            "first": 0,
+            "now": 0.0,
+            "result": 8
+          },
+          {
+            "name": "手枪",
+            "base": 0.0,
+            "first": 0,
+            "now": 0.0,
+            "result": 8
+          },
+          {
+            "name": "重武器",
+            "base": 0.0,
+            "first": 0,
+            "now": 0.0,
+            "result": 8
+          },
+          {
+            "name": "长枪射击",
+            "base": 0.0,
+            "first": 0,
+            "now": 6,
+            "result": 14
+          }
+        ]
+      },
+      {
+        "category": "社交类技能",
+        "items": [
+          {
+            "name": "贿赂",
+            "base": 0.0,
+            "first": 0,
+            "now": 0.0,
+            "result": 6
+          },
+          {
+            "name": "交谈",
+            "base": 2.0,
+            "first": 0,
+            "now": 2.0,
+            "result": 8
+          },
+          {
+            "name": "察言观色",
+            "base": 2.0,
+            "first": 0,
+            "now": 2.0,
+            "result": 8
+          },
+          {
+            "name": "审讯",
+            "base": 0.0,
+            "first": 0,
+            "now": 0.0,
+            "result": 0
+          },
+          {
+            "name": "说服",
+            "base": 2.0,
+            "first": 0,
+            "now": 2.0,
+            "result": 8
+          },
+          {
+            "name": "个人装扮",
+            "base": 0.0,
+            "first": 0,
+            "now": 0.0,
+            "result": 6
+          },
+          {
+            "name": "街头智慧",
+            "base": 0.0,
+            "first": 0,
+            "now": 0.0,
+            "result": 6
+          },
+          {
+            "name": "交易",
+            "base": 0.0,
+            "first": 0,
+            "now": 0.0,
+            "result": 6
+          },
+          {
+            "name": "服饰与风格",
+            "base": 0.0,
+            "first": 0,
+            "now": 0.0,
+            "result": 6
+          }
+        ]
+      },
+      {
+        "category": "技术类技能",
+        "items": [
+          {
+            "name": "空中载具技术",
+            "base": 0.0,
+            "first": 0,
+            "now": 0.0,
+            "result": 8
+          },
+          {
+            "name": "基础技术",
+            "base": 0.0,
+            "first": 0,
+            "now": 6,
+            "result": 14
+          },
+          {
+            "name": "赛博技术",
+            "base": 0.0,
+            "first": 0,
+            "now": 6,
+            "result": 14
+          },
+          {
+            "name": "爆破学",
+            "base": 0.0,
+            "first": 0,
+            "now": 0.0,
+            "result": 8
+          },
+          {
+            "name": "电子/安全技术",
+            "base": 0.0,
+            "first": 0,
+            "now": 0.0,
+            "result": 8
+          },
+          {
+            "name": "急救",
+            "base": 2.0,
+            "first": 0,
+            "now": 2.0,
+            "result": 8
+          },
+          {
+            "name": "强化急救",
+            "base": 0.0,
+            "first": 0,
+            "now": 0.0,
+            "result": 8
+          },
+          {
+            "name": "伪造",
+            "base": 0.0,
+            "first": 0,
+            "now": 0.0,
+            "result": 8
+          },
+          {
+            "name": "地面载具技术",
+            "base": 0.0,
+            "first": 0,
+            "now": 0.0,
+            "result": 8
+          },
+          {
+            "name": "绘画/雕刻/速写",
+            "base": 0.0,
+            "first": 0,
+            "now": 0.0,
+            "result": 8
+          },
+          {
+            "name": "摄影/摄像",
+            "base": 0.0,
+            "first": 0,
+            "now": 0.0,
+            "result": 8
+          },
+          {
+            "name": "开锁",
+            "base": 0.0,
+            "first": 0,
+            "now": 0.0,
+            "result": 8
+          },
+          {
+            "name": "扒窃",
+            "base": 0.0,
+            "first": 0,
+            "now": 0.0,
+            "result": 8
+          },
+          {
+            "name": "海洋载具技术",
+            "base": 0.0,
+            "first": 0,
+            "now": 0.0,
+            "result": 8
+          },
+          {
+            "name": "武器技术",
+            "base": 0.0,
+            "first": 0,
+            "now": 0.0,
+            "result": 8
+          }
+        ]
+      }
+    ]
+  },
+  "lifePath": {
+    "风格": "风格",
+    "区域": "印度",
+    "语言": "英语",
+    "服饰": "服饰",
+    "发型": "发型",
+    "信物": "信物",
+    "动机": "动机",
+    "个性": "豁达",
+    "最看重": "友谊",
+    "最在乎": "朋友翼月生的下落",
+    "观点": "观点",
+    "宝贝": "自律型AI\"莱莎\"",
+    "目标": "找到翼月生的下落",
+    "家庭背景": "家庭背景",
+    "原生家庭": "拥有哥哥和妹妹的幸福之家",
+    "童年环境": "虽有挫折，但总体幸福",
+    "家庭危机": "家庭危机"
+  },
+  "weapons": [
+    {
+      "name": "大龙\"卫士\"卡宾枪",
+      "count": 1,
+      "skill": "自动武器",
+      "damage": "2D10×4 (5.56中)",
+      "ammo": "单",
+      "rof": 4,
+      "hands": 2,
+      "conceal": "可隐藏",
+      "price": 850,
+      "note": "大龙为贴身安保工作人员研制的大威力卡宾枪。像微型冲锋枪一样短小精悍，却具备突击步枪的火力。射程DV表使用冲锋枪的DV。"
+    }
+  ],
+  "armor": [
+    {
+      "type": "轻型装甲夹克",
+      "part": "躯干",
+      "desc": "日常穿着的轻型护甲",
+      "stopping": 11,
+      "penalty": 0,
+      "price": 100
+    }
+  ],
+  "fashion": [],
+  "funds": {
+    "现有资金": 2550,
+    "剩余资金": 2550,
+    "声望": 3
+  },
+  "cyberware": {
+    "left_eye": [
+      {
+        "slot": 0,
+        "name": "寻血猎犬义眼",
+        "facility": "诊所",
+        "desc": "人造眼睛，内置微光夜视仪(30m)，分析AI可分析30m内可疑物件。察觉+2",
+        "price": 300,
+        "humanity": 5
+      }
+    ],
+    "right_eye": [
+      {
+        "slot": 1.0,
+        "name": "名称",
+        "facility": "安装设施",
+        "desc": "描述和数据",
+        "price": 0,
+        "humanity": 0
+      }
+    ],
+    "cyberware_total_cost": 300,
+    "cyberware_total_humanity": 5
+  },
+  "friends": [
+    {
+      "name": "翼月生",
+      "relation": "挚友",
+      "desc": "马达夫的发小，堂哥关系。2078年在夜之城失踪，马达夫来寻回友人。"
+    }
+  ],
+  "enemies": [],
+  "backstory": "马达夫生于一个印度的政治集团家庭，他的父母是印度北方邦的议员。他有一个哥哥和妹妹，而他的大哥被选为下一任政治领袖被培养。但这并不是说马达夫在家里就不受宠，相反他被全家人所喜爱，他生来自由的性格和他能看透未来般的慧眼使他超脱于世不似凡人。他的童年总是在和翼月生游山玩水中度过，而当他留在家中时，他有总会摆弄他车械库里那些工具和发明。他十分喜欢改装车，常常和朋友开着改装车去到山野里拉力。在他们疯玩的时候，翼月生有时会露出十分困扰的表情，而每当马达夫问起，他都会向他倾诉来自家庭的压力，马达夫则会鼓励他独立，去自己做自己向往的事。在不久后，翼月生离开了家庭和祖国，奔赴夜之城去寻找自己的志向。但还没等到他扬名立万的消息传来，翼月生便失去了踪迹。马达夫十分自责，他认为自己的鼓励是导致翼月生失踪的原因之一，为了不让两个家庭沉浸在失去亲人的悲痛之中，为了找回自己的挚友，马达夫选择来到美国开始了他在夜之城的冒险。",
+  "bodyInjuries": [
+    {
+      "roll": 2,
+      "name": "断臂",
+      "effect": "断掉的那只手臂，没了。手里东西掉落。死亡豁免惩罚+1。",
+      "emergency": "做不到",
+      "cure": "手术DV17"
+    },
+    {
+      "roll": 3,
+      "name": "断手",
+      "effect": "断掉的那只手，没了。手里东西掉落。死亡豁免惩罚+1。",
+      "emergency": "做不到",
+      "cure": "手术DV17"
+    },
+    {
+      "roll": 4,
+      "name": "气胸",
+      "effect": "移速-2(最低1)，死亡豁免惩罚+1。",
+      "emergency": "强化急救DV15",
+      "cure": "手术DV15"
+    },
+    {
+      "roll": 5,
+      "name": "肋骨骨折",
+      "effect": "徒步移动超4m回合受额外伤害。",
+      "emergency": "强化急救DV13",
+      "cure": "强化急救DV15/手术DV13"
+    },
+    {
+      "roll": 6,
+      "name": "手臂骨折",
+      "effect": "骨折手臂无法使用，手里东西掉落。",
+      "emergency": "强化急救DV13",
+      "cure": "强化急救DV15/手术DV13"
+    },
+    {
+      "roll": 7,
+      "name": "体内异物",
+      "effect": "徒步移动超4m回合受额外伤害。",
+      "emergency": "急救/强化急救DV13",
+      "cure": "紧急处理可治愈"
+    },
+    {
+      "roll": 8,
+      "name": "小腿/大腿骨折",
+      "effect": "移速-4(最低1)。",
+      "emergency": "强化急救DV13",
+      "cure": "强化急救DV15/手术DV13"
+    },
+    {
+      "roll": 9,
+      "name": "肌肉撕裂",
+      "effect": "近战攻击判定-2。",
+      "emergency": "急救/强化急救DV13",
+      "cure": "紧急处理可治愈"
+    },
+    {
+      "roll": 10,
+      "name": "脊柱受伤",
+      "effect": "下回合无法使用动作，可移动。死亡豁免惩罚+1。",
+      "emergency": "强化急救DV15",
+      "cure": "手术DV15"
+    },
+    {
+      "roll": 11,
+      "name": "手指粉碎性骨折",
+      "effect": "用到那只手的动作判定-4。",
+      "emergency": "强化急救DV13",
+      "cure": "手术DV15"
+    },
+    {
+      "roll": 12,
+      "name": "断腿",
+      "effect": "断腿没了。移速-6(最低1)，无法闪避。死亡豁免惩罚+1。",
+      "emergency": "做不到",
+      "cure": "手术DV17"
+    }
+  ],
+  "headInjuries": [
+    {
+      "roll": 2,
+      "name": "失去眼睛",
+      "effect": "一只眼睛不见。远程攻击和视觉觉察-4。死亡豁免惩罚+1。",
+      "emergency": "做不到",
+      "cure": "手术DV17"
+    },
+    {
+      "roll": 3,
+      "name": "脑损伤",
+      "effect": "所有动作判定-2，死亡豁免惩罚+1。",
+      "emergency": "做不到",
+      "cure": "手术DV17"
+    },
+    {
+      "roll": 4,
+      "name": "眼睛受损",
+      "effect": "远程攻击和视觉觉察判定-2。",
+      "emergency": "强化急救DV15",
+      "cure": "手术DV13"
+    },
+    {
+      "roll": 5,
+      "name": "脑震荡",
+      "effect": "所有动作判定-2。",
+      "emergency": "急救/强化急救DV13",
+      "cure": "紧急处理可治愈"
+    },
+    {
+      "roll": 6,
+      "name": "领骨骨折",
+      "effect": "需要说话的动作判定-4。",
+      "emergency": "强化急救DV15",
+      "cure": "强化急救DV15/手术DV13"
+    },
+    {
+      "roll": 7,
+      "name": "头部异物",
+      "effect": "徒步移动超4m回合受额外伤害。",
+      "emergency": "急救/强化急救DV13",
+      "cure": "紧急处理可治愈"
+    },
+    {
+      "roll": 8,
+      "name": "挥鞭伤",
+      "effect": "死亡豁免惩罚+1。",
+      "emergency": "强化急救DV13",
+      "cure": "强化急救/手术DV13"
+    },
+    {
+      "roll": 9,
+      "name": "颅骨骨裂",
+      "effect": "瞄准头部的瞄准射击伤害倍数变3。死亡豁免惩罚+1。",
+      "emergency": "强化急救DV15",
+      "cure": "强化急救/手术DV15"
+    },
+    {
+      "roll": 10,
+      "name": "耳朵受损",
+      "effect": "徒步超4m下回合无法移动。听力觉察-2。",
+      "emergency": "强化急救DV13",
+      "cure": "手术DV13"
+    },
+    {
+      "roll": 11,
+      "name": "气管破裂",
+      "effect": "无法说话。死亡豁免惩罚+1。",
+      "emergency": "做不到",
+      "cure": "手术DV15"
+    },
+    {
+      "roll": 12,
+      "name": "失去耳朵",
+      "effect": "一只耳朵不见。徒步超4m下回合无法移动。听力觉察-4。死亡豁免惩罚+1。",
+      "emergency": "做不到",
+      "cure": "手术DV17"
+    }
+  ],
+  "mentalStates": [
+    {
+      "roll": 1,
+      "name": "恐惧症",
+      "effect": "对某事物产生强烈恐惧，需做意志豁免否则无法行动。"
+    },
+    {
+      "roll": 2,
+      "name": "抑郁症",
+      "effect": "长期情绪低落，判定-2。"
+    },
+    {
+      "roll": 3,
+      "name": "狂躁症",
+      "effect": "情绪高涨，冲动行为，无法长时间专注。"
+    },
+    {
+      "roll": 4,
+      "name": "幻觉",
+      "effect": "产生不存在的感官体验，需判定区分真实。"
+    },
+    {
+      "roll": 5,
+      "name": "妄想症",
+      "effect": "产生固定错误信念，难以被说服。"
+    },
+    {
+      "roll": 6,
+      "name": "人格分裂",
+      "effect": "出现两个或多个不同人格。"
+    },
+    {
+      "roll": 7,
+      "name": "强迫症",
+      "effect": "反复进行某行为，不这样做会焦虑。"
+    },
+    {
+      "roll": 8,
+      "name": "社交障碍",
+      "effect": "社交判定-4，倾向独处。"
+    },
+    {
+      "roll": 9,
+      "name": "赛博精神病前兆",
+      "effect": "对人类情感淡漠，共情相关判定-4。"
+    }
+  ],
+  "vitals": {
+    "hp": 35,
+    "hpMax": 35,
+    "humanity": 55,
+    "humanityMax": 60,
+    "empathy": 6
+  }
+}
