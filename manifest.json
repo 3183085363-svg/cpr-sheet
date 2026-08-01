@@ -6,8 +6,8 @@
   "author": "小汤圆 × 红豆包",
   "action": {
     "title": "赛博朋克红 · 角色卡",
-    "icon": "./icon.svg",
-    "popover": "./",
+    "icon": "https://3183085363-svg.github.io/cpr-sheet/icon.svg",
+    "popover": "https://3183085363-svg.github.io/cpr-sheet/",
     "height": 760,
     "width": 520
   },
