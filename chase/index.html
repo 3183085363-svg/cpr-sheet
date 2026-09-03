@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>赛博朋克红 · 追逐战控制台</title>
+<style>
+/* ========== 赛博朋克红主题 ========== */
+:root{
+  --bg:#0a0a0f; --panel:#12121c; --panel2:#181826;
+  --yellow:#FCEE0A; --cyan:#00F0FF; --red:#FF003C;
+  --text:#d8d8e2; --dim:#7a7a8c;
+  --mono:'Consolas','Courier New','Microsoft YaHei',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--mono);font-size:14px;min-height:100vh}
+h1,h2,h3{font-weight:700;letter-spacing:1px}
+button{font-family:var(--mono);cursor:pointer;border:1px solid var(--cyan);background:transparent;color:var(--cyan);
+  padding:5px 10px;font-size:13px;transition:all .15s}
+button:hover{background:var(--cyan);color:#000;box-shadow:0 0 8px var(--cyan)}
+button:disabled{opacity:.35;cursor:not-allowed;box-shadow:none;background:transparent;color:var(--cyan)}
+button.yellow{border-color:var(--yellow);color:var(--yellow)}
+button.yellow:hover{background:var(--yellow);color:#000;box-shadow:0 0 8px var(--yellow)}
+button.red{border-color:var(--red);color:var(--red)}
+button.red:hover{background:var(--red);color:#fff;box-shadow:0 0 8px var(--red)}
+button.small{padding:2px 7px;font-size:12px}
+input,select{font-family:var(--mono);background:#0d0d16;border:1px solid #33334a;color:var(--text);padding:4px 6px;font-size:13px}
+input:focus,select:focus{outline:none;border-color:var(--cyan)}
+input[type=number]{width:64px}
+label{font-size:12px;color:var(--dim)}
+
+/* ========== 整体布局 ========== */
+header{padding:8px 14px;border-bottom:2px solid var(--yellow);display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+  background:linear-gradient(90deg,#0a0a0f,#151508 60%,#0a0a0f)}
+header h1{color:var(--yellow);font-size:18px;text-shadow:0 0 10px var(--yellow)}
+header .round{color:var(--cyan)}
+#layout{display:grid;grid-template-columns:290px 1fr 320px;grid-template-rows:auto 1fr auto;gap:10px;padding:10px;
+  grid-template-areas:"track track track" "left center right" "log log log"}
+#track-area{grid-area:track}
+#left{grid-area:left}
+#center{grid-area:center}
+#right{grid-area:right}
+#log-area{grid-area:log}
+.panel{background:var(--panel);border:1px solid #2a2a3d;padding:10px}
+.panel>h2{font-size:14px;color:var(--cyan);border-bottom:1px solid #2a2a3d;padding-bottom:6px;margin-bottom:8px;
+  text-shadow:0 0 6px rgba(0,240,255,.6)}
+
+/* ========== 距离带轨道 ========== */
+#track-wrap{position:relative}
+#track{display:flex;border:2px solid var(--yellow);box-shadow:0 0 14px rgba(252,238,10,.35);height:110px;position:relative;
+  background:repeating-linear-gradient(90deg,#0d0d16 0 16.66%,#11111d 16.66% 33.33%)}
+.band-cell{flex:1;border-right:1px dashed #33334a;padding:4px 6px;position:relative}
+.band-cell:last-child{border-right:none}
+.band-label{font-size:11px;color:var(--yellow);line-height:1.3}
+.band-label b{display:block;font-size:13px}
+.band-cell.escape .band-label{color:var(--red);text-shadow:0 0 6px var(--red)}
+#tokens{position:absolute;left:0;top:34px;width:100%;height:72px;pointer-events:none}
+.token{position:absolute;width:110px;margin-left:-55px;text-align:center;pointer-events:auto;cursor:pointer;
+  transition:left .7s cubic-bezier(.25,.8,.25,1), top .3s}
+.token .tk-body{border:1px solid var(--cyan);background:#0d1420;padding:3px 4px;font-size:11px;
+  box-shadow:0 0 8px rgba(0,240,255,.5);overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.token.leader .tk-body{border-color:var(--yellow);box-shadow:0 0 8px rgba(252,238,10,.5)}
+.token.destroyed .tk-body{border-color:var(--red);color:var(--red);text-decoration:line-through}
+.token .arrow{color:var(--cyan);font-size:10px}
+#track-scroll{overflow-x:auto}
+
+/* ========== 车辆卡 / 先攻 ========== */
+.veh-card{border:1px solid #33334a;background:var(--panel2);padding:7px;margin-bottom:8px;position:relative}
+.veh-card.active{border-color:var(--yellow);box-shadow:0 0 10px rgba(252,238,10,.5)}
+.veh-card.selected{border-left:4px solid var(--cyan)}
+.veh-card .vc-head{display:flex;justify-content:space-between;align-items:center;gap:4px}
+.veh-card .vc-name{color:var(--yellow);font-weight:700}
+.veh-card .vc-init{color:var(--cyan);font-size:12px}
+.veh-card .vc-sub{font-size:11px;color:var(--dim);margin:2px 0}
+.sdp-bar{height:8px;background:#2a0a12;border:1px solid #55111f;margin:4px 0 2px}
+.sdp-fill{height:100%;background:linear-gradient(90deg,var(--red),#ff7a00);transition:width .4s}
+.vc-tags{margin:3px 0;font-size:11px}
+.tag{display:inline-block;padding:1px 5px;border:1px solid;margin-right:4px;margin-bottom:2px}
+.tag.lc{color:var(--red);border-color:var(--red);animation:blink 1s infinite}
+.tag.nos{color:var(--cyan);border-color:var(--cyan)}
+.tag.dead{color:#666;border-color:#666}
+@keyframes blink{50%{opacity:.35}}
+.vc-btns{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px}
+.btn-row{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+
+/* ========== 骰子面板 ========== */
+.stunt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:6px;margin:6px 0}
+.stunt-grid button{font-size:12px;padding:6px 4px}
+.mod-line{display:flex;align-items:center;gap:6px;font-size:12px;padding:2px 0}
+.mod-line .mv{color:var(--yellow)}
+fieldset{border:1px solid #2a2a3d;padding:8px;margin-bottom:10px}
+legend{color:var(--cyan);font-size:12px;padding:0 6px}
+.form-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:4px 0}
+
+/* ========== 事件卡 ========== */
+#current-card{border:1px solid var(--red);background:linear-gradient(180deg,#1a0a10,#12121c);padding:8px;min-height:90px;
+  box-shadow:0 0 10px rgba(255,0,60,.35)}
+#current-card h3{color:var(--red);font-size:14px;margin-bottom:4px}
+#current-card p{font-size:12px;line-height:1.5}
+#current-card .fx{margin-top:4px;font-size:12px}
+#current-card .fx b{color:var(--yellow)}
+.deck-info{font-size:12px;color:var(--dim);margin:6px 0}
+
+/* ========== 结果卡流 ========== */
+#log{max-height:280px;overflow-y:auto;display:flex;flex-direction:column;gap:6px}
+.result-card{border:1px solid var(--cyan);border-left-width:5px;background:var(--panel2);padding:6px 10px;font-size:12px;
+  box-shadow:0 0 6px rgba(0,240,255,.25)}
+.result-card.cs{border-color:var(--yellow);box-shadow:0 0 10px rgba(252,238,10,.5)}
+.result-card.cf{border-color:var(--red);box-shadow:0 0 10px rgba(255,0,60,.5)}
+.result-card.info{border-color:#444}
+.result-card .rc-title{font-weight:700;color:var(--cyan)}
+.result-card.cs .rc-title{color:var(--yellow)}
+.result-card.cf .rc-title{color:var(--red)}
+.result-card .rc-line{color:var(--text);line-height:1.45}
+.result-card .rc-dice{color:var(--dim)}
+
+/* ========== 弹窗 ========== */
+.modal-mask{position:fixed;inset:0;background:rgba(0,0,10,.8);display:flex;align-items:center;justify-content:center;z-index:50}
+.modal{background:var(--panel);border:2px solid var(--yellow);box-shadow:0 0 24px rgba(252,238,10,.4);padding:16px;
+  width:min(680px,94vw);max-height:88vh;overflow-y:auto}
+.modal h2{color:var(--yellow);font-size:16px;margin-bottom:10px}
+.vs-row{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:start}
+.vs-box{border:1px solid #33334a;padding:8px}
+.vs-box h3{font-size:13px;margin-bottom:6px}
+.vs-box.leader h3{color:var(--yellow)}
+.vs-box.chaser h3{color:var(--red)}
+.vs-mark{color:var(--cyan);font-size:20px;align-self:center}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.hidden{display:none!important}
+hr{border:none;border-top:1px solid #2a2a3d;margin:10px 0}
+
+/* ========== 手机竖屏响应式 ========== */
+@media (max-width:900px){
+  #layout{grid-template-columns:1fr;grid-template-areas:"track" "left" "center" "right" "log"}
+  #track-scroll{overflow-x:auto}
+  #track{min-width:640px}
+  #tokens{min-width:640px}
+  .token{width:90px;margin-left:-45px}
+  .vs-row{grid-template-columns:1fr}
+  .vs-mark{text-align:center}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>赛博朋克红 · 追逐战</h1>
+  <span class="round">第 <b id="round-num">1</b> 轮（3秒/轮）</span>
+  <span id="chase-status" style="color:var(--cyan)"></span>
+  <span style="flex:1"></span>
+  <button class="small" onclick="openAddVehicle()">+ 添加车辆</button>
+  <button class="small yellow" onclick="nextRound()">下一轮 ▶</button>
+  <button class="small red" onclick="endChase('GM 手动结束追逐')">强行结束</button>
+  <button class="small" onclick="resetAll()">重置</button>
+</header>
+
+<div id="layout">
+  <!-- 顶部：距离带轨道 -->
+  <section id="track-area" class="panel">
+    <h2>距离带轨道（B0 并排缠斗 → B5 摆脱）</h2>
+    <div id="track-scroll">
+      <div id="track-wrap">
+        <div id="track"></div>
+        <div id="tokens"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 左侧：先攻队列 -->
+  <section id="left" class="panel">
+    <h2>先攻队列</h2>
+    <div class="btn-row">
+      <button class="small yellow" onclick="rollAllInitiative()">全员掷先攻</button>
+      <button class="small" onclick="nextTurn()">下一个 ▶</button>
+      <button class="small" onclick="pinStarted()">启动载具置顶</button>
+    </div>
+    <div id="veh-list"></div>
+  </section>
+
+  <!-- 中央：骰子面板 -->
+  <section id="center">
+    <div class="panel" style="margin-bottom:10px">
+      <h2>距离结算（每轮末）</h2>
+      <p style="font-size:12px;color:var(--dim);margin-bottom:6px">
+        自动选取带位最小的领跑者与最近的追击者做驾驶对抗。速度修正 = 战斗速度差 ÷ 20（加到快车一侧）。出目差≥6移2带，差1-5移1带，平手不变。</p>
+      <button class="yellow" onclick="openResolve()">⚡ 距离结算</button>
+    </div>
+
+    <div class="panel" style="margin-bottom:10px">
+      <h2>判定引擎</h2>
+      <fieldset>
+        <legend>修正链（逐项开关）</legend>
+        <div id="mod-chain"></div>
+        <div class="form-row">
+          <label>自定义修正 <input type="number" id="custom-mod" value="0" style="width:56px"></label>
+          <label><input type="checkbox" id="custom-mod-on" checked>启用</label>
+        </div>
+        <div class="form-row">
+          <label>花幸运点 <input type="number" id="luck-spend" value="0" min="0" style="width:56px"></label>
+          <span style="font-size:11px;color:var(--dim)">掷骰前花，每点+1，从当前选中车辆幸运池扣除</span>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>特技驾驶（失败 → 立即失控）</legend>
+        <div class="stunt-grid" id="stunt-grid"></div>
+      </fieldset>
+      <fieldset>
+        <legend>其他判定</legend>
+        <div class="btn-row">
+          <button class="small" onclick="ordinaryDrive()">普通驾驶掌控（DV10，敏+驾≤9需骰）</button>
+          <button class="small" onclick="weakShot()">弱点射击（-8，行驶中DV13）</button>
+        </div>
+        <div class="form-row">
+          <label>属性 <input type="number" id="c-attr" value="5"></label>
+          <label>技能 <input type="number" id="c-skill" value="0"></label>
+          <label>DV <input type="number" id="c-dv" value="13"></label>
+          <input id="c-title" placeholder="判定名称" style="width:110px">
+          <button class="small yellow" onclick="customCheck()">自定义判定</button>
+        </div>
+      </fieldset>
+    </div>
+  </section>
+
+  <!-- 右侧：事件卡 + GM 控制 -->
+  <section id="right">
+    <div class="panel" style="margin-bottom:10px">
+      <h2>事件卡（每轮事件阶段盲抽1张）</h2>
+      <div class="deck-info">牌堆剩余 <b id="deck-count" style="color:var(--cyan)">12</b> 张 · 弃牌堆 <b id="discard-count" style="color:var(--dim)">0</b> 张</div>
+      <button class="red" onclick="drawEvent()">🂠 盲抽事件卡</button>
+      <div id="current-card" style="margin-top:8px"><p style="color:var(--dim)">尚未抽取。事件阶段点上方按钮。</p></div>
+    </div>
+    <div class="panel">
+      <h2>GM 控制台</h2>
+      <div class="form-row">
+        <label>全局天气修正 <input type="number" id="weather-mod" value="0" style="width:56px" onchange="setWeather(this.value)"></label>
+      </div>
+      <div class="form-row">
+        <label>车辆 <select id="gm-veh"></select></label>
+        <button class="small" onclick="gmBand(-1)">带位 -1</button>
+        <button class="small" onclick="gmBand(1)">带位 +1</button>
+      </div>
+      <div class="btn-row">
+        <button class="small red" onclick="openCrash()">💥 撞车结算（6d6）</button>
+        <button class="small" onclick="stareDown()">横眉冷对（酷+名声对抗）</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 底部：结果卡流 -->
+  <section id="log-area" class="panel">
+    <h2>判定记录</h2>
+    <div id="log"></div>
+  </section>
+</div>
+
+<!-- 添加车辆弹窗 -->
+<div id="add-modal" class="modal-mask hidden">
+  <div class="modal">
+    <h2>添加车辆</h2>
+    <div class="form-row">
+      <label>载具库 <select id="nv-lib" onchange="fillLib()"></select></label>
+      <label>阵营 <select id="nv-role"><option value="leader">领跑者</option><option value="chaser">追击者</option></select></label>
+    </div>
+    <div class="grid2">
+      <div class="form-row"><label>呼号 <input id="nv-name" style="width:120px"></label></div>
+      <div class="form-row"><label>起始带位 <input type="number" id="nv-band" value="1" min="0" max="5"></label></div>
+      <div class="form-row"><label>驾驶员 <input id="nv-driver" style="width:120px"></label></div>
+      <div class="form-row"><label>敏捷 <input type="number" id="nv-agi" value="6"></label></div>
+      <div class="form-row"><label>驾驶技能 <input type="number" id="nv-drive" value="4"></label></div>
+      <div class="form-row"><label>反应REF <input type="number" id="nv-ref" value="6"></label></div>
+      <div class="form-row"><label>幸运池 <input type="number" id="nv-luck" value="3"></label></div>
+      <div class="form-row"><label>酷 <input type="number" id="nv-cool" value="4"></label></div>
+      <div class="form-row"><label>名声 <input type="number" id="nv-rep" value="2"></label></div>
+      <div class="form-row"><label>NOS瓶数 <input type="number" id="nv-nos" value="1" min="0"></label></div>
+    </div>
+    <hr>
+    <div class="btn-row">
+      <button class="yellow" onclick="addVehicle()">加入追逐</button>
+      <button onclick="closeModal('add-modal')">取消</button>
+    </div>
+  </div>
+</div>
+
+<!-- 距离结算弹窗 -->
+<div id="resolve-modal" class="modal-mask hidden">
+  <div class="modal">
+    <h2>距离结算 · 驾驶对抗</h2>
+    <div id="resolve-body"></div>
+  </div>
+</div>
+
+<!-- 撞车弹窗 -->
+<div id="crash-modal" class="modal-mask hidden">
+  <div class="modal">
+    <h2>撞车结算</h2>
+    <div class="form-row">
+      <label>甲方 <select id="crash-a"></select></label>
+      <label>乙方 <select id="crash-b"></select></label>
+      <button class="red" onclick="doCrash()">💥 相撞（双方各6d6 + 挥鞭伤）</button>
+      <button onclick="closeModal('crash-modal')">取消</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =====================================================================
+ * 数据定义
+ * ===================================================================== */
+// 载具库（陆地）
+const LIB = {
+  '公路摩托':     {sdp:35, seats:2, speed:20},
+  '超级摩托':     {sdp:35, seats:2, speed:60},
+  '紧凑型公路车': {sdp:50, seats:4, speed:20},
+  '高性能公路车': {sdp:50, seats:4, speed:40},
+  '超级公路车':   {sdp:50, seats:2, speed:60},
+};
+// 特技驾驶 DV 表
+const STUNTS = [
+  ['甩尾',13],['急转弯',13],['紧急制动',13],['急调头',17],
+  ['飞车特技',17],['着陆(空中)',13],['空中特技',17],
+];
+// 事件卡（12张）
+const EVENTS = [
+  {name:'横穿行人', desc:'有行人突然冲出！紧急避让（驾驶DV13）。', dv:13, skill:'drive',
+    ok:'避让成功：本轮对抗 +1。', bad:'撞人！载具 6d6 伤害 + 乘员挥鞭伤 + 名声事件。',
+    okFx:v=>addEventMod('横穿行人避让',1), badFx:v=>damageVehicle(v,roll6d6().total,'撞人')},
+  {name:'施工窄道', desc:'前方施工，只剩一条窄道！甩尾通过（驾驶DV13）。', dv:13, skill:'drive',
+    ok:'顺利通过：本轮对抗 +1。', bad:'失控！',
+    okFx:v=>addEventMod('施工窄道',1), badFx:v=>setLostControl(v,true)},
+  {name:'NCPD路障', desc:'NCPD 设下路障！急转弯规避（驾驶DV13）。', dv:13, skill:'drive',
+    ok:'成功绕过。', bad:'撞路障 6d6，或选择绕行（本轮对抗 -2）。',
+    okFx:()=>{}, badFx:v=>{damageVehicle(v,roll6d6().total,'撞路障');}},
+  {name:'油污路面', desc:'路面大片油污，本轮全员对抗 -2。', auto:()=>addEventMod('油污路面',-2)},
+  {name:'天桥限高', desc:'低矮天桥！高车须急转弯（驾驶DV17），低车无损；硬闯 = 撞车。', dv:17, skill:'drive',
+    ok:'擦顶通过。', bad:'撞上限高架：撞车 6d6。',
+    okFx:()=>{}, badFx:v=>damageVehicle(v,roll6d6().total,'撞限高架')},
+  {name:'集市人流', desc:'冲进拥挤集市！紧急制动（驾驶DV13）。', dv:13, skill:'drive',
+    ok:'借人流掩护：摆脱 1 带。', bad:'平民伤亡！名声事件。',
+    okFx:v=>{v.band=clampBand(v.band+1);logCard('normal','集市人流','✅ '+v.name+' 借人流摆脱 1 带，现位于 B'+v.band);},
+    badFx:v=>logCard('cf','名声事件','💀 '+v.name+' 造成平民伤亡，GM 记录名声后果。')},
+  {name:'隧道入口', desc:'车辆冲入隧道。追方觉察 DV15，失败则追方丢 1 带。', dv:15, skill:'ref', target:'chaser',
+    ok:'追方咬住了目标。', bad:'追方跟丢：丢 1 带。',
+    okFx:()=>{}, badFx:v=>{v.band=clampBand(v.band-1);logCard('normal','隧道入口','❌ '+v.name+' 跟丢，退到 B'+v.band);}},
+  {name:'爆改帮拦截', desc:'第三方爆改帮车辆从 B2 杀入追逐！', auto:()=>spawnGoon()},
+  {name:'直升机探照灯', desc:'NCPD 直升机探照灯锁定领跑者，其本轮对抗 -1。', auto:()=>addEventMod('探照灯锁定',-1)},
+  {name:'暴雨来袭', desc:'暴雨倾盆！全局 -1，B3 以上追踪失效。', auto:()=>{state.weatherMod-=1;syncWeatherInput();addEventMod('暴雨致盲',0);logCard('info','暴雨来袭','全局修正 -1（持续），B3 以上追踪失效。');}},
+  {name:'死胡同', desc:'前方死胡同！急调头（驾驶DV17），失败被迫停车 → 横眉冷对。', dv:17, skill:'drive',
+    ok:'甩尾调头，继续狂飙。', bad:'被迫停车！进入横眉冷对。',
+    okFx:()=>{}, badFx:v=>{v.stopped=true;logCard('cf','死胡同','🛑 '+v.name+' 被逼停！可用 GM 面板进行「横眉冷对」判定。');}},
+  {name:'高速匝道分岔', desc:'匝道分岔！双方驾驶对抗，胜方选路线，败方随机吃一张事件卡。', special:'fork'},
+];
+const BAND_NAMES = ['B0 并排缠斗','B1 近距离 10-25m','B2 中距离 25-50m','B3 远距离 50-100m','B4 视距边缘 100m+','B5 摆脱！'];
+
+/* =====================================================================
+ * 状态 & 持久化
+ * ===================================================================== */
+const SAVE_KEY='cpr-chase-v1';
+let state = null;
+
+function defaultState(){
+  return {
+    vehicles:[], order:[], turn:0, round:1,
+    weatherMod:0, eventMods:[], // {label,mod}
+    deck:shuffle([...Array(12).keys()]), discard:[], currentCard:null,
+    log:[], ended:false, selectedId:null,
+  };
+}
+function save(){ localStorage.setItem(SAVE_KEY, JSON.stringify(state)); }
+function load(){
+  try{ const s=localStorage.getItem(SAVE_KEY); if(s){ state=JSON.parse(s); return; } }catch(e){}
+  state=defaultState();
+  // 双车示例预填
+  addVehRaw({name:'夜莺', lib:'超级摩托', role:'leader', driver:'夜莺', agi:8, drive:6, ref:8, luck:4, cool:6, rep:3, nos:1, band:2});
+  addVehRaw({name:'NCPD巡逻车', lib:'高性能公路车', role:'chaser', driver:'警官德克斯', agi:6, drive:5, ref:6, luck:2, cool:5, rep:4, nos:0, band:1});
+  state.order = state.vehicles.map(v=>v.id);
+  logCard('info','系统','已预填示例：领跑者「夜莺」(超级摩托, B2) vs 追击者「NCPD巡逻车」(高性能公路车, B1)。');
+}
+function resetAll(){
+  if(!confirm('清空全部追逐状态并重开？')) return;
+  localStorage.removeItem(SAVE_KEY); load(); renderAll();
+}
+
+/* =====================================================================
+ * 骰子引擎（规则书130页：爆炸骰不连锁）
+ * ===================================================================== */
+function d(n){ return 1+Math.floor(Math.random()*n); }
+function d10(){ return d(10); }
+// 核心 d10：出10再骰一枚累加（不连锁）；出1再骰一枚扣除（不连锁）
+function coreD10(){
+  const r=d10(); let bonus=0, penalty=0, crit=null;
+  if(r===10){ bonus=d10(); crit='cs'; }
+  else if(r===1){ penalty=d10(); crit='cf'; }
+  return {r, bonus, penalty, crit};
+}
+function roll6d6(){ const dice=[d(6),d(6),d(6),d(6),d(6),d(6)]; return {dice, total:dice.reduce((a,b)=>a+b,0)}; }
+function shuffle(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+function clampBand(b){ return Math.max(0,Math.min(5,b)); }
+
+/* =====================================================================
+ * 车辆
+ * ===================================================================== */
+let _vid=1;
+function addVehRaw(o){
+  const lib=LIB[o.lib];
+  const v={ id:'v'+(_vid++)+'_'+Date.now()%100000, name:o.name, lib:o.lib, role:o.role,
+    driver:o.driver, agi:+o.agi, drive:+o.drive, ref:+o.ref,
+    luck:+o.luck, maxLuck:+o.luck, cool:+o.cool, rep:+o.rep,
+    nos:+o.nos, band:clampBand(+o.band||0),
+    sdp:lib.sdp, maxSdp:lib.sdp, seats:lib.seats, speed:lib.speed,
+    lostControl:false, stopped:false, destroyed:false, started:false, init:null };
+  state.vehicles.push(v); return v;
+}
+function getVeh(id){ return state.vehicles.find(v=>v.id===id); }
+function addVehicle(){
+  const lib=document.getElementById('nv-lib').value;
+  const name=document.getElementById('nv-name').value.trim()||lib;
+  const v=addVehRaw({ name, lib, role:document.getElementById('nv-role').value,
+    driver:document.getElementById('nv-driver').value.trim()||name,
+    agi:nv('nv-agi'), drive:nv('nv-drive'), ref:nv('nv-ref'),
+    luck:nv('nv-luck'), cool:nv('nv-cool'), rep:nv('nv-rep'),
+    nos:nv('nv-nos'), band:nv('nv-band') });
+  state.order.push(v.id);
+  logCard('info','车辆加入','🚗 '+v.name+'（'+lib+'）加入追逐，位于 B'+v.band+'。');
+  closeModal('add-modal'); save(); renderAll();
+}
+function nv(id){ return +document.getElementById(id).value||0; }
+function damageVehicle(v,dmg,src){
+  v.sdp=Math.max(0,v.sdp-dmg);
+  let msg='💥 '+v.name+' 受到 '+dmg+' 点伤害（'+src+'），SDP '+v.sdp+'/'+v.maxSdp+'。乘员遭受挥鞭样损伤（严重伤势）。';
+  if(v.sdp<=0 && !v.destroyed){ v.destroyed=true; msg+=' ☠️ 载具被毁！'; }
+  logCard(v.destroyed?'cf':'normal','伤害结算',msg);
+  checkEnd();
+}
+function setLostControl(v,on){
+  v.lostControl=on;
+  logCard(on?'cf':'info','失控状态', on?('🌀 '+v.name+' 失控！GM 决定本轮全部移动，若撞到即撞车。'):(v.name+' 恢复掌控。'));
+}
+function removeVehicle(id){
+  if(!confirm('移除该车辆？')) return;
+  state.vehicles=state.vehicles.filter(v=>v.id!==id);
+  state.order=state.order.filter(i=>i!==id);
+  if(state.selectedId===id) state.selectedId=null;
+  save(); renderAll();
+}
+function spawnGoon(){
+  const v=addVehRaw({name:'爆改帮', lib:'超级摩托', role:'chaser', driver:'爆改帮骑手', agi:7, drive:5, ref:7, luck:0, cool:4, rep:2, nos:1, band:2});
+  state.order.push(v.id);
+  logCard('cf','爆改帮拦截','🏍️ 爆改帮超级摩托从 B2 加入追逐！');
+}
+
+/* =====================================================================
+ * 先攻（REF + 1d10，同值重骰；启动载具置顶）
+ * ===================================================================== */
+function rollAllInitiative(){
+  const rolls={};
+  state.vehicles.forEach(v=>{
+    if(v.destroyed) return;
+    let val, guard=0;
+    do{ val=v.ref+d10(); guard++; }while(Object.values(rolls).includes(val)&&guard<20); // 同值重骰
+    rolls[v.id]=val; v.init=val;
+  });
+  sortOrder();
+  state.turn=0;
+  logCard('normal','先攻','🎲 全员先攻：'+state.order.map(id=>{const v=getVeh(id);return v.name+' '+v.init;}).join('，'));
+  save(); renderAll();
+}
+function sortOrder(){
+  const alive=state.vehicles.filter(v=>!v.destroyed);
+  const started=alive.filter(v=>v.started).sort((a,b)=>b.init-a.init);
+  const rest=alive.filter(v=>!v.started).sort((a,b)=>b.init-a.init);
+  state.order=[...started,...rest].map(v=>v.id);
+}
+function pinStarted(){ sortOrder(); logCard('info','先攻','🚀 已启动载具的驾驶员置顶。'); save(); renderAll(); }
+function nextTurn(){ if(state.order.length){ state.turn=(state.turn+1)%state.order.length; save(); renderAll(); } }
+function nextRound(){
+  state.round++; state.eventMods=[]; // 「本轮」修正清空
+  logCard('info','回合','━━ 第 '+state.round+' 轮开始（每轮3秒：1移动动作+1其他动作）。本轮事件修正已清空。━━');
+  save(); renderAll();
+}
+
+/* =====================================================================
+ * 修正链
+ * ===================================================================== */
+function addEventMod(label,mod){ state.eventMods.push({label,mod}); save(); renderModChain(); }
+function collectMods(){
+  const mods=[];
+  if(document.getElementById('mod-weather-on')?.checked!==false && state.weatherMod!==0)
+    mods.push({label:'全局/天气', mod:state.weatherMod});
+  state.eventMods.forEach((m,i)=>{
+    if(document.getElementById('mod-ev-'+i)?.checked!==false) mods.push(m);
+  });
+  const cm=+document.getElementById('custom-mod').value||0;
+  if(cm!==0 && document.getElementById('custom-mod-on').checked) mods.push({label:'自定义', mod:cm});
+  return mods;
+}
+function spendLuck(v,want){
+  want=Math.max(0,Math.min(want, v?v.luck:0));
+  if(v) v.luck-=want;
+  return want;
+}
+function getSelected(){ return getVeh(state.selectedId)||getVeh(state.order[state.turn])||state.vehicles[0]; }
+
+/* =====================================================================
+ * 判定执行（属性+技能+1d10 vs DV，含幸运/修正链/爆炸骰）
+ * ===================================================================== */
+function runCheck(opt){
+  // opt: {title, attrName, attr, skillName, skill, dv, vehicle, extraMods[], luckSpend}
+  const core=coreD10();
+  const mods=[...(opt.extraMods||[]), ...collectMods()];
+  const luckUsed=spendLuck(opt.vehicle, opt.luckSpend||0);
+  if(luckUsed) mods.push({label:'幸运点×'+luckUsed, mod:luckUsed});
+  const modSum=mods.reduce((a,m)=>a+m.mod,0);
+  const total=opt.attr+opt.skill+core.r+core.bonus-core.penalty+modSum;
+  const success=total>=opt.dv;
+  const cls=core.crit==='cs'?'cs':core.crit==='cf'?'cf':'normal';
+  let lines=['骰面 d10='+core.r+(core.bonus?' + 大成功奖励 '+core.bonus:'')+(core.penalty?' - 大失败惩罚 '+core.penalty:'')];
+  lines.push('基础：'+opt.attrName+' '+opt.attr+' + '+opt.skillName+' '+opt.skill);
+  mods.forEach(m=>lines.push('修正：'+m.label+' '+(m.mod>=0?'+':'')+m.mod));
+  lines.push('总计 <b>'+total+'</b> vs DV'+opt.dv+' → '+(success?'<b style="color:var(--cyan)">成功</b>':'<b style="color:var(--red)">失败</b>')
+    +(core.crit==='cs'?' ✨大成功':core.crit==='cf'?' 💀大失败':''));
+  logCard(cls, opt.title, lines.join('<br>'));
+  save(); renderAll();
+  return {total, success, crit:core.crit};
+}
+// 快捷：特技驾驶
+function stunt(name,dv){
+  const v=getSelected(); if(!v){alert('请先选择车辆');return;}
+  const r=runCheck({title:'特技驾驶 · '+name, attrName:'敏捷', attr:v.agi, skillName:'驾驶', skill:v.drive, dv, vehicle:v,
+    luckSpend:+document.getElementById('luck-spend').value||0});
+  if(!r.success){ setLostControl(v,true); }
+  save(); renderAll();
+}
+function ordinaryDrive(){
+  const v=getSelected(); if(!v){alert('请先选择车辆');return;}
+  if(v.agi+v.drive>9){ logCard('info','普通驾驶', v.name+' 敏捷+驾驶 = '+(v.agi+v.drive)+' > 9，免判定保持掌控。'); save(); renderAll(); return; }
+  const r=runCheck({title:'普通驾驶掌控', attrName:'敏捷', attr:v.agi, skillName:'驾驶', skill:v.drive, dv:10, vehicle:v,
+    luckSpend:+document.getElementById('luck-spend').value||0});
+  if(!r.success) setLostControl(v,true);
+  save(); renderAll();
+}
+function weakShot(){
+  const v=getSelected(); if(!v){alert('请先选择车辆');return;}
+  runCheck({title:'弱点射击（穿甲×2）', attrName:'反应', attr:v.ref, skillName:'射击(自填)', skill:+document.getElementById('c-skill').value||0,
+    dv:13, vehicle:v, extraMods:[{label:'弱点射击', mod:-8}],
+    luckSpend:+document.getElementById('luck-spend').value||0});
+}
+function customCheck(){
+  runCheck({title:document.getElementById('c-title').value||'自定义判定',
+    attrName:'属性', attr:+document.getElementById('c-attr').value||0,
+    skillName:'技能', skill:+document.getElementById('c-skill').value||0,
+    dv:+document.getElementById('c-dv').value||10, vehicle:getSelected(),
+    luckSpend:+document.getElementById('luck-spend').value||0});
+}
+
+/* =====================================================================
+ * 距离结算
+ * ===================================================================== */
+function findLeaderChaser(){
+  const leaders=state.vehicles.filter(v=>v.role==='leader'&&!v.destroyed);
+  const chasers=state.vehicles.filter(v=>v.role==='chaser'&&!v.destroyed);
+  if(!leaders.length||!chasers.length) return null;
+  const leader=leaders.reduce((a,b)=>a.band<=b.band?a:b);   // 带位最小的领跑者
+  const chaser=chasers.reduce((a,b)=>a.band>=b.band?a:b);   // 最近的（带位最大）追击者
+  return {leader, chaser};
+}
+function openResolve(){
+  const pair=findLeaderChaser();
+  if(!pair){ alert('需要至少一辆领跑者和一辆追击者'); return; }
+  const {leader,chaser}=pair;
+  const speedMod=Math.round((leader.speed-chaser.speed)/20); // >0 领跑者快
+  const box=(v,side,sm)=>{
+    const nosOpts=v.nos>0
+      ? `<label><input type="radio" name="nos-${side}" value="0" checked>不用</label>
+         <label><input type="radio" name="nos-${side}" value="2">+2对抗</label>
+         <label><input type="radio" name="nos-${side}" value="band">直接拉1带</label>`
+      : '<span style="color:var(--dim)">无 NOS</span>';
+    return `<div class="vs-box ${side}">
+      <h3>${v.name}</h3>
+      <div style="font-size:12px">${v.lib} · B${v.band} · 速度${v.speed}<br>敏捷${v.agi}+驾驶${v.drive}
+      ${sm?` · <span style="color:var(--yellow)">速度修正${sm>0?'+':''}${sm}</span>`:''}</div>
+      <div class="form-row"><label>花幸运 <input type="number" id="rs-luck-${side}" value="0" min="0" max="${v.luck}"></label>
+      <label>额外修正 <input type="number" id="rs-mod-${side}" value="0"></label></div>
+      <div class="form-row"><label>NOS：</label>${nosOpts}</div>
+    </div>`;
+  };
+  document.getElementById('resolve-body').innerHTML=`
+    <p style="font-size:12px;color:var(--dim);margin-bottom:8px">领跑者 ${leader.name}(B${leader.band}) vs 头号追击者 ${chaser.name}(B${chaser.band})</p>
+    <div class="vs-row">
+      ${box(leader,'leader',speedMod>0?speedMod:0)}
+      <div class="vs-mark">⚡VS⚡</div>
+      ${box(chaser,'chaser',speedMod<0?-speedMod:0)}
+    </div>
+    <hr>
+    <div class="btn-row">
+      <button class="yellow" onclick="doResolve('${leader.id}','${chaser.id}',${speedMod})">🎲 双方骰！</button>
+      <button onclick="closeModal('resolve-modal')">取消</button>
+    </div>`;
+  document.getElementById('resolve-modal').classList.remove('hidden');
+}
+function doResolve(leaderId,chaserId,speedMod){
+  const leader=getVeh(leaderId), chaser=getVeh(chaserId);
+  const side=(v,s,sm)=>{
+    const luck=spendLuck(v, +document.getElementById('rs-luck-'+s).value||0);
+    const extra=+document.getElementById('rs-mod-'+s).value||0;
+    const nos=document.querySelector(`input[name="nos-${s}"]:checked`)?.value||'0';
+    return {v, luck, extra, nos, sm};
+  };
+  const L=side(leader,'leader',speedMod>0?speedMod:0);
+  const C=side(chaser,'chaser',speedMod<0?-speedMod:0);
+  // NOS 直接拉带：无需对抗
+  const pull=(S,rival)=>{
+    S.v.nos--; S.v.band=clampBand(S.v.band+ (S.v.role==='leader'?1:1));
+    logCard('info','NOS','🚀 '+S.v.name+' 点燃 NOS 直接拉 1 带，现位于 B'+S.v.band+'。');
+  };
+  if(L.nos==='band') pull(L);
+  if(C.nos==='band') pull(C);
+  if(L.nos==='band'||C.nos==='band'){
+    if(L.nos!=='band'&&C.nos!=='band'){} else { closeModal('resolve-modal'); afterResolve(); return; }
+  }
+  const rollSide=(S)=>{
+    const core=coreD10();
+    const mods=[...(S.sm?[{label:'速度修正',mod:S.sm}]:[]), ...(S.luck?[{label:'幸运点',mod:S.luck}]:[]),
+      ...(S.extra?[{label:'额外修正',mod:S.extra}]:[]), ...(S.nos==='2'?(S.v.nos--,[{label:'NOS',mod:2}]):[])];
+    const modSum=mods.reduce((a,m)=>a+m.mod,0);
+    const total=S.v.agi+S.v.drive+core.r+core.bonus-core.penalty+modSum;
+    return {core, mods, total};
+  };
+  const rl=rollSide(L), rc=rollSide(C);
+  const diff=rl.total-rc.total;
+  const adiff=Math.abs(diff);
+  let move= adiff>=6?2: adiff>=1?1:0;
+  let summary='';
+  if(move===0){ summary='平手！带位不变。'; }
+  else if(diff>0){ leader.band=clampBand(leader.band+move); summary=leader.name+' 甩开 '+move+' 带，现位于 B'+leader.band+'。'; }
+  else { chaser.band=clampBand(chaser.band+move); summary=chaser.name+' 逼近 '+move+' 带，现位于 B'+chaser.band+'。'; }
+  const cls=(rl.core.crit==='cs'||rc.core.crit==='cs')?'cs':(rl.core.crit==='cf'||rc.core.crit==='cf')?'cf':'normal';
+  const fmt=(S,r)=>S.v.name+'：d10='+r.core.r+(r.core.bonus?'+'+r.core.bonus:'')+(r.core.penalty?'-'+r.core.penalty:'')
+    +' + 敏'+S.v.agi+' + 驾'+S.v.drive+r.mods.map(m=>'，'+m.label+(m.mod>=0?'+':'')+m.mod).join('')+' = <b>'+r.total+'</b>';
+  logCard(cls,'距离结算', fmt(L,rl)+'<br>'+fmt(C,rc)+'<br>出目差 '+adiff+' → '+summary);
+  closeModal('resolve-modal');
+  afterResolve();
+}
+function afterResolve(){
+  // 同带相遇提示
+  const pair=findLeaderChaser();
+  if(pair && pair.chaser.band>=pair.leader.band)
+    logCard('info','并排缠斗','⚠️ '+pair.chaser.name+' 已咬上 '+pair.leader.name+'（B'+pair.leader.band+' 并排缠斗）！');
+  checkEnd(); save(); renderAll();
+}
+
+/* =====================================================================
+ * 结束条件
+ * ===================================================================== */
+function checkEnd(){
+  if(state.ended) return;
+  const leaders=state.vehicles.filter(v=>v.role==='leader'&&!v.destroyed);
+  const chasers=state.vehicles.filter(v=>v.role==='chaser'&&!v.destroyed);
+  if(leaders.some(v=>v.band>=5)) return endChase('🏁 领跑者抵达 B5 —— 摆脱成功，追逐结束！');
+  if(leaders.length && chasers.length===0) return endChase('追击方全灭/全失控/放弃 —— 领跑者逃脱！');
+  if(leaders.length===0 && chasers.length) return endChase('领跑者载具被毁 —— 追逐结束。');
+  if(leaders.some(v=>v.stopped)) return; // 横眉冷对由 GM 触发
+}
+function endChase(reason){
+  if(state.ended) return;
+  state.ended=true;
+  logCard('cs','追逐结束','🏁 '+reason);
+  save(); renderAll();
+}
+function restartChase(){ state.ended=false; logCard('info','系统','追逐继续。'); save(); renderAll(); }
+function stareDown(){
+  const pair=findLeaderChaser(); if(!pair){alert('需要领跑者与追击者');return;}
+  const {leader,chaser}=pair;
+  const rl=leader.cool+leader.rep+d10(), rc=chaser.cool+chaser.rep+d10();
+  logCard(rl===rc?'normal':rl>rc?'cs':'cf','横眉冷对',
+    leader.name+'（酷'+leader.cool+'+名声'+leader.rep+'）= <b>'+rl+'</b> vs '+chaser.name+'（酷'+chaser.cool+'+名声'+chaser.rep+'）= <b>'+rc+'</b><br>'
+    +(rl>rc?'😎 '+leader.name+' 气势压倒对方！':rl<rc?'💢 '+chaser.name+' 占据上风！':'双方互不相让。'));
+  save(); renderAll();
+}
+
+/* =====================================================================
+ * 事件卡
+ * ===================================================================== */
+function drawEvent(){
+  if(!state.deck.length){
+    if(!state.discard.length){ alert('12张事件卡已全部抽完'); return; }
+    state.deck=shuffle(state.discard); state.discard=[];
+    logCard('info','事件卡','♻️ 弃牌堆重洗入牌堆。');
+  }
+  const idx=state.deck.pop(); state.discard.push(idx);
+  state.currentCard=idx;
+  const card=EVENTS[idx];
+  logCard('info','事件卡','🂠 抽到事件卡：<b style="color:var(--red)">'+card.name+'</b> — '+card.desc);
+  if(card.auto){ card.auto(); }
+  save(); renderAll();
+}
+function runEventCheck(){
+  const card=EVENTS[state.currentCard]; if(!card||!card.dv) return;
+  let v=getSelected();
+  if(card.target==='chaser'){ const chasers=state.vehicles.filter(x=>x.role==='chaser'&&!x.destroyed); if(chasers.length) v=chasers.reduce((a,b)=>a.band>=b.band?a:b); }
+  if(!v){alert('无可用车辆');return;}
+  const isRef=card.skill==='ref';
+  const r=runCheck({title:'事件 · '+card.name, attrName:isRef?'反应':'敏捷', attr:isRef?v.ref:v.agi,
+    skillName:isRef?'觉察':'驾驶', skill:isRef?0:v.drive, dv:card.dv, vehicle:v,
+    luckSpend:+document.getElementById('luck-spend').value||0});
+  if(r.success){ logCard('normal',card.name,'✅ '+card.ok); card.okFx&&card.okFx(v); }
+  else { logCard('cf',card.name,'❌ '+card.bad); card.badFx&&card.badFx(v); }
+  save(); renderAll();
+}
+function runFork(){
+  // 高速匝道分岔：双方驾驶对抗，败方随机吃一张事件卡
+  const pair=findLeaderChaser(); if(!pair){alert('需要双方车辆');return;}
+  const {leader,chaser}=pair;
+  const rl=leader.agi+leader.drive+d10(), rc=chaser.agi+chaser.drive+d10();
+  const loser= rl>=rc ? chaser : leader;
+  const winner= rl>=rc ? leader : chaser;
+  logCard('normal','匝道分岔', winner.name+' 赢得路线选择（'+Math.max(rl,rc)+' vs '+Math.min(rl,rc)+'），'+loser.name+' 被迫随机吃一张事件卡！');
+  const idx=d(12)-1; const card=EVENTS[idx];
+  logCard('info','强制事件','🂠 '+loser.name+' 撞上事件：<b style="color:var(--red)">'+card.name+'</b> — '+card.desc);
+  if(card.auto) card.auto();
+  save(); renderAll();
+}
+
+/* =====================================================================
+ * 撞车 / GM
+ * ===================================================================== */
+function openCrash(){
+  const opts=state.vehicles.map(v=>`<option value="${v.id}">${v.name}</option>`).join('');
+  document.getElementById('crash-a').innerHTML=opts;
+  document.getElementById('crash-b').innerHTML=opts;
+  document.getElementById('crash-modal').classList.remove('hidden');
+}
+function doCrash(){
+  const a=getVeh(document.getElementById('crash-a').value), b=getVeh(document.getElementById('crash-b').value);
+  if(!a||!b||a===b){alert('请选择两辆不同车辆');return;}
+  const ra=roll6d6(), rb=roll6d6();
+  logCard('cf','撞车！','💥 '+a.name+' 与 '+b.name+' 相撞！<br>'+a.name+' 6d6=['+ra.dice.join(',')+']='+ra.total+'<br>'+b.name+' 6d6=['+rb.dice.join(',')+']='+rb.total+'<br>双方乘员均受挥鞭样损伤（严重伤势）。');
+  damageVehicle(a,ra.total,'撞车'); damageVehicle(b,rb.total,'撞车');
+  closeModal('crash-modal'); save(); renderAll();
+}
+function gmBand(delta){
+  const v=getVeh(document.getElementById('gm-veh').value); if(!v) return;
+  v.band=clampBand(v.band+delta);
+  logCard('info','GM 调整','🔧 GM 将 '+v.name+' 调至 B'+v.band+'。');
+  checkEnd(); save(); renderAll();
+}
+function setWeather(val){ state.weatherMod=+val||0; save(); renderModChain(); }
+function syncWeatherInput(){ document.getElementById('weather-mod').value=state.weatherMod; }
+
+/* =====================================================================
+ * 日志
+ * ===================================================================== */
+function logCard(cls,title,html){
+  state.log.unshift({cls,title,html,t:Date.now()});
+  if(state.log.length>200) state.log.pop();
+}
+
+/* =====================================================================
+ * 渲染
+ * ===================================================================== */
+function renderTrack(){
+  const track=document.getElementById('track');
+  track.innerHTML=BAND_NAMES.map((n,i)=>{
+    const [b,...rest]=n.split(' ');
+    return `<div class="band-cell${i===5?' escape':''}"><div class="band-label"><b>${b}</b>${rest.join(' ')}</div></div>`;
+  }).join('');
+  const tokens=document.getElementById('tokens');
+  // 按带分组，组内纵向堆叠
+  const byBand={};
+  state.vehicles.forEach(v=>{ (byBand[v.band]=byBand[v.band]||[]).push(v); });
+  let html='';
+  Object.entries(byBand).forEach(([band,vs])=>{
+    vs.forEach((v,i)=>{
+      const left=(+band+0.5)/6*100;
+      const cls='token'+(v.role==='leader'?' leader':'')+(v.destroyed?' destroyed':'');
+      html+=`<div class="${cls}" style="left:${left}%;top:${i*26}px" onclick="selectVeh('${v.id}')" title="${v.lib} SDP${v.sdp}/${v.maxSdp}">
+        <div class="tk-body">${v.destroyed?'☠️':v.role==='leader'?'🏁':'🚔'} ${v.name}${v.lostControl?' 🌀':''}</div>
+        <div class="arrow">▲</div></div>`;
+    });
+  });
+  tokens.innerHTML=html;
+}
+function selectVeh(id){ state.selectedId=id; save(); renderAll(); }
+function renderVehicles(){
+  const el=document.getElementById('veh-list');
+  const list=state.order.map(getVeh).filter(Boolean);
+  if(!list.length){ el.innerHTML='<p style="color:var(--dim);font-size:12px">尚无车辆，点顶部「+ 添加车辆」。</p>'; return; }
+  el.innerHTML=list.map((v,i)=>{
+    const pct=Math.round(v.sdp/v.maxSdp*100);
+    const tags=[ v.lostControl?'<span class="tag lc">失控</span>':'', v.nos>0?`<span class="tag nos">NOS×${v.nos}</span>`:'',
+      v.started?'<span class="tag nos">已启动</span>':'', v.stopped?'<span class="tag lc">被逼停</span>':'',
+      v.destroyed?'<span class="tag dead">被毁</span>':'', v.role==='leader'?'<span class="tag" style="color:var(--yellow);border-color:var(--yellow)">领跑者</span>':'' ].join('');
+    return `<div class="veh-card${i===state.turn?' active':''}${v.id===state.selectedId?' selected':''}" onclick="selectVeh('${v.id}')">
+      <div class="vc-head"><span class="vc-name">${i===state.turn?'▶ ':''}${v.name}</span><span class="vc-init">先攻 ${v.init??'—'}</span></div>
+      <div class="vc-sub">${v.lib} · 驾驶员 ${v.driver} · B${v.band} · 速度 ${v.speed} · 座位 ${v.seats}</div>
+      <div class="sdp-bar"><div class="sdp-fill" style="width:${pct}%"></div></div>
+      <div class="vc-sub">SDP ${v.sdp}/${v.maxSdp} · 敏${v.agi} 驾${v.drive} REF${v.ref} 运${v.luck}/${v.maxLuck} 酷${v.cool} 名${v.rep}</div>
+      <div class="vc-tags">${tags}</div>
+      <div class="vc-btns" onclick="event.stopPropagation()">
+        <button class="small" onclick="toggleStarted('${v.id}')">${v.started?'取消启动':'启动载具'}</button>
+        <button class="small" onclick="toggleLC('${v.id}')">${v.lostControl?'恢复':'失控'}</button>
+        <button class="small yellow" onclick="nosPull('${v.id}')" ${v.nos<=0?'disabled':''}>NOS拉1带</button>
+        <button class="small red" onclick="removeVehicle('${v.id}')">移除</button>
+      </div></div>`;
+  }).join('');
+}
+function toggleStarted(id){ const v=getVeh(id); v.started=!v.started; sortOrder(); save(); renderAll(); }
+function toggleLC(id){ const v=getVeh(id); setLostControl(v,!v.lostControl); save(); renderAll(); }
+function nosPull(id){
+  const v=getVeh(id); if(v.nos<=0) return;
+  v.nos--; v.band=clampBand(v.band+1);
+  logCard('info','NOS','🚀 '+v.name+' 点燃 NOS 直接拉 1 带，现位于 B'+v.band+'。');
+  checkEnd(); save(); renderAll();
+}
+function renderModChain(){
+  const el=document.getElementById('mod-chain');
+  let html=`<div class="mod-line"><input type="checkbox" id="mod-weather-on" checked> 全局/天气修正 <span class="mv">${state.weatherMod>=0?'+':''}${state.weatherMod}</span></div>`;
+  html+=state.eventMods.map((m,i)=>`<div class="mod-line"><input type="checkbox" id="mod-ev-${i}" checked> ${m.label} <span class="mv">${m.mod>=0?'+':''}${m.mod}</span> <button class="small red" onclick="delEventMod(${i})">×</button></div>`).join('');
+  el.innerHTML=html;
+}
+function delEventMod(i){ state.eventMods.splice(i,1); save(); renderModChain(); }
+function renderEvents(){
+  document.getElementById('deck-count').textContent=state.deck.length;
+  document.getElementById('discard-count').textContent=state.discard.length;
+  const el=document.getElementById('current-card');
+  if(state.currentCard==null){ el.innerHTML='<p style="color:var(--dim)">尚未抽取。事件阶段点上方按钮。</p>'; return; }
+  const c=EVENTS[state.currentCard];
+  let btns='';
+  if(c.dv) btns+=`<button class="small yellow" style="margin-top:6px" onclick="runEventCheck()">🎲 对选中车辆判定（DV${c.dv}）</button>`;
+  if(c.special==='fork') btns+=`<button class="small yellow" style="margin-top:6px" onclick="runFork()">🎲 驾驶对抗定路线</button>`;
+  el.innerHTML=`<h3>🂠 ${c.name}</h3><p>${c.desc}</p>
+    ${c.ok?`<div class="fx"><b>成功：</b>${c.ok}</div><div class="fx"><b>失败：</b>${c.bad}</div>`:''}${btns}`;
+}
+function renderGM(){
+  document.getElementById('gm-veh').innerHTML=state.vehicles.map(v=>`<option value="${v.id}">${v.name} (B${v.band})</option>`).join('');
+  syncWeatherInput();
+}
+function renderLog(){
+  document.getElementById('log').innerHTML=state.log.map(e=>
+    `<div class="result-card ${e.cls}"><div class="rc-title">${e.title}</div><div class="rc-line">${e.html}</div></div>`).join('');
+}
+function renderAll(){
+  document.getElementById('round-num').textContent=state.round;
+  document.getElementById('chase-status').textContent=state.ended?'—— 追逐已结束 ——':'';
+  renderTrack(); renderVehicles(); renderModChain(); renderEvents(); renderGM(); renderLog();
+}
+
+/* =====================================================================
+ * 弹窗工具 & 初始化
+ * ===================================================================== */
+function closeModal(id){ document.getElementById(id).classList.add('hidden'); }
+function openAddVehicle(){ document.getElementById('add-modal').classList.remove('hidden'); }
+function fillLib(){ document.getElementById('nv-name').value=document.getElementById('nv-lib').value; }
+
+function init(){
+  load();
+  // 载具库下拉
+  document.getElementById('nv-lib').innerHTML=Object.keys(LIB).map(k=>{
+    const l=LIB[k]; return `<option value="${k}">${k}（SDP${l.sdp}/${l.seats}座/速度${l.speed}）</option>`;
+  }).join('');
+  // 特技按钮
+  document.getElementById('stunt-grid').innerHTML=STUNTS.map(([n,dv])=>
+    `<button onclick="stunt('${n}',${dv})">${n}<br><span style="color:var(--yellow)">DV${dv}</span></button>`).join('');
+  renderAll();
+}
+init();
+</script>
+</body>
+</html>
