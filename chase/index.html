@@ -147,6 +147,7 @@ hr{border:none;border-top:1px solid #2a2a3d;margin:10px 0}
   <h1>赛博朋克红 · 追逐战</h1>
   <span class="round">第 <b id="round-num">1</b> 轮（3秒/轮）</span>
   <span id="chase-status" style="color:var(--cyan)"></span>
+  <span id="obr-status" style="display:none;color:var(--yellow);border:1px solid var(--yellow);padding:2px 8px;font-size:12px;text-shadow:0 0 6px var(--yellow)">● 已连接枭熊·同步中</span>
   <span style="flex:1"></span>
   <button class="small" onclick="openAddVehicle()">+ 添加车辆</button>
   <button class="small yellow" onclick="nextRound()">下一轮 ▶</button>
@@ -365,7 +366,7 @@ function defaultState(){
     log:[], ended:false, selectedId:null,
   };
 }
-function save(){ localStorage.setItem(SAVE_KEY, JSON.stringify(state)); }
+function save(){ localStorage.setItem(SAVE_KEY, JSON.stringify(state)); broadcastState(); }
 function load(){
   try{ const s=localStorage.getItem(SAVE_KEY); if(s){ state=JSON.parse(s); return; } }catch(e){}
   state=defaultState();
@@ -377,7 +378,7 @@ function load(){
 }
 function resetAll(){
   if(!confirm('清空全部追逐状态并重开？')) return;
-  localStorage.removeItem(SAVE_KEY); load(); renderAll();
+  localStorage.removeItem(SAVE_KEY); load(); save(); renderAll();
 }
 
 /* =====================================================================
@@ -845,6 +846,59 @@ function renderAll(){
 }
 
 /* =====================================================================
+ * 枭熊(Owlbear Rodeo)全房间同步
+ * 协议：频道 cpr/chase，消息 {v:1, state} 全量状态，后操作者覆盖。
+ * 不在枭熊环境（OBR 不可用）时全部跳过，保持单机行为。
+ * ===================================================================== */
+const OBR_CHANNEL='cpr/chase';
+let obrReady=false;        // 枭熊连接就绪
+let applyingRemote=false;  // 正在应用远端状态（防回环）
+let syncTimer=null;        // 防抖计时器
+
+// 本地状态每次变化后由 save() 调用：300ms 防抖后全量广播（REMOTE 不回环本机）
+function broadcastState(){
+  if(!obrReady||applyingRemote||!window.OBR) return;
+  clearTimeout(syncTimer);
+  syncTimer=setTimeout(()=>{
+    if(applyingRemote) return;
+    try{ window.OBR.broadcast.sendMessage(OBR_CHANNEL,{v:1,state},{destination:'REMOTE'}); }catch(e){}
+  },300);
+}
+// 收到远端全量状态：应用本机 + 全量重渲染，不广播回去
+function applyRemote(msg){
+  if(!msg||msg.v!==1||!msg.state) return;
+  applyingRemote=true;
+  clearTimeout(syncTimer);
+  try{
+    state=msg.state;
+    localStorage.setItem(SAVE_KEY, JSON.stringify(state));
+    renderAll();
+  }finally{ applyingRemote=false; }
+}
+function initOBR(){
+  if(!window.OBR||initOBR.done) return; // SDK 未加载 → 单机模式；防事件+轮询双触发
+  initOBR.done=true;
+  const OBR=window.OBR;
+  try{
+    OBR.onReady(()=>{ // 回调式 API，仅在枭熊环境内触发
+      Promise.resolve(OBR.isAvailable()).then(av=>{
+        if(!av) return;
+        obrReady=true;
+        document.getElementById('obr-status').style.display='';
+        OBR.broadcast.onMessage(OBR_CHANNEL,(ev)=>applyRemote(ev&&ev.data));
+      }).catch(()=>{});
+    });
+  }catch(e){}
+}
+// module 脚本 deferred 执行，时序晚于本脚本，故用事件 + 兜底轮询双保险
+window.addEventListener('obr-sdk-loaded', initOBR);
+let _obrPolls=0;
+const _obrPoll=setInterval(()=>{
+  if(window.OBR){ clearInterval(_obrPoll); initOBR(); }
+  else if(++_obrPolls>50) clearInterval(_obrPoll); // ~5s 后放弃，保持单机
+},100);
+
+/* =====================================================================
  * 弹窗工具 & 初始化
  * ===================================================================== */
 function closeModal(id){ document.getElementById(id).classList.add('hidden'); }
@@ -863,6 +917,14 @@ function init(){
   renderAll();
 }
 init();
+</script>
+<script type="module">
+// 枭熊 SDK（esm.sh CDN）。加载失败（无网/纯浏览器打开）时静默降级为单机模式。
+try{
+  const {default:OBR}=await import('https://esm.sh/@owlbear-rodeo/sdk@latest');
+  window.OBR=OBR;
+  window.dispatchEvent(new Event('obr-sdk-loaded'));
+}catch(e){/* 单机模式，无需处理 */}
 </script>
 </body>
 </html>

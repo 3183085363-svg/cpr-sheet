@@ -1,6 +1,6 @@
 {
   "name": "赛博朋克红 · 角色卡",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "manifest_version": 1,
   "description": "赛博朋克红角色卡：自动卡解析，多角色，追踪，token绑定，点击掷骰+全房间动画历史，主题配色，token血条气泡，先攻表(REF+1d10/载具置顶/全房间同步)。",
   "author": "小汤圆 × 红豆包",
