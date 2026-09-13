@@ -245,6 +245,22 @@ hr{border:none;border-top:1px solid #2a2a3d;margin:10px 0}
         <button class="small" onclick="stareDown()">横眉冷对（酷+名声对抗）</button>
       </div>
     </div>
+    <div class="panel" style="margin-top:10px">
+      <h2>🗺️ 地图联动</h2>
+      <div class="form-row">
+        <label>每格 <input type="number" id="grid-meters" value="2" min="0.5" step="0.5" style="width:56px"> 米</label>
+        <span style="font-size:11px;color:var(--dim)">用于坐标测距</span>
+      </div>
+      <div class="btn-row">
+        <button class="small yellow" onclick="scanSceneTokens()">🔍 扫描地图token导入</button>
+      </div>
+      <div class="btn-row">
+        <button class="small" onclick="detectDistances()">📏 按token坐标测距 → 刷新距离带</button>
+      </div>
+      <div style="font-size:11px;color:var(--dim);line-height:1.5">
+        导入的token与参战车辆绑定；测距以「领跑者」为原点，按真实地图距离映射 B0-B4。未绑定token的车辆保持当前带位。
+      </div>
+    </div>
   </section>
 
   <!-- 底部：结果卡流 -->
@@ -299,6 +315,20 @@ hr{border:none;border-top:1px solid #2a2a3d;margin:10px 0}
       <label>乙方 <select id="crash-b"></select></label>
       <button class="red" onclick="doCrash()">💥 相撞（双方各6d6 + 挥鞭伤）</button>
       <button onclick="closeModal('crash-modal')">取消</button>
+    </div>
+  </div>
+</div>
+
+<!-- token导入弹窗 -->
+<div id="import-modal" class="modal-mask hidden">
+  <div class="modal" style="max-width:560px">
+    <h2>🔍 从地图导入token</h2>
+    <div style="font-size:11px;color:var(--dim);margin-bottom:8px">勾选要加入追逐的token，为每个选择载具型号与阵营。驾驶员属性可在导入后通过移除+手动添加微调。</div>
+    <div id="import-list" style="max-height:320px;overflow-y:auto"></div>
+    <hr>
+    <div class="btn-row">
+      <button class="yellow" onclick="importSelectedTokens()">导入选中token</button>
+      <button onclick="closeModal('import-modal')">取消</button>
     </div>
   </div>
 </div>
@@ -406,7 +436,7 @@ function addVehRaw(o){
   const v={ id:'v'+(_vid++)+'_'+Date.now()%100000, name:o.name, lib:o.lib, role:o.role,
     driver:o.driver, agi:+o.agi, drive:+o.drive, ref:+o.ref,
     luck:+o.luck, maxLuck:+o.luck, cool:+o.cool, rep:+o.rep,
-    nos:+o.nos, band:clampBand(+o.band||0),
+    nos:+o.nos, band:clampBand(+o.band||0), tokenId:o.tokenId||null,
     sdp:lib.sdp, maxSdp:lib.sdp, seats:lib.seats, speed:lib.speed,
     lostControl:false, stopped:false, destroyed:false, started:false, init:null };
   state.vehicles.push(v); return v;
@@ -792,7 +822,7 @@ function renderVehicles(){
       v.destroyed?'<span class="tag dead">被毁</span>':'', v.role==='leader'?'<span class="tag" style="color:var(--yellow);border-color:var(--yellow)">领跑者</span>':'' ].join('');
     return `<div class="veh-card${i===state.turn?' active':''}${v.id===state.selectedId?' selected':''}" onclick="selectVeh('${v.id}')">
       <div class="vc-head"><span class="vc-name">${i===state.turn?'▶ ':''}${v.name}</span><span class="vc-init">先攻 ${v.init??'—'}</span></div>
-      <div class="vc-sub">${v.lib} · 驾驶员 ${v.driver} · B${v.band} · 速度 ${v.speed} · 座位 ${v.seats}</div>
+      <div class="vc-sub">${v.lib} · 驾驶员 ${v.driver} · B${v.band} · 速度 ${v.speed} · 座位 ${v.seats}${v.tokenId?' · 🔗已绑token':''}</div>
       <div class="sdp-bar"><div class="sdp-fill" style="width:${pct}%"></div></div>
       <div class="vc-sub">SDP ${v.sdp}/${v.maxSdp} · 敏${v.agi} 驾${v.drive} REF${v.ref} 运${v.luck}/${v.maxLuck} 酷${v.cool} 名${v.rep}</div>
       <div class="vc-tags">${tags}</div>
@@ -897,6 +927,94 @@ const _obrPoll=setInterval(()=>{
   if(window.OBR){ clearInterval(_obrPoll); initOBR(); }
   else if(++_obrPolls>50) clearInterval(_obrPoll); // ~5s 后放弃，保持单机
 },100);
+
+/* =====================================================================
+ * 地图联动：token 导入 + 坐标测距 → 距离带
+ * 仅在枭熊环境可用；tokenId 存入车辆状态随广播全房间同步。
+ * ===================================================================== */
+// 距离带映射（以领跑者为原点的真实距离，单位：米）
+function bandFromMeters(m){
+  if(m < 10)  return 0;  // B0 并排缠斗
+  if(m < 25)  return 1;  // B1 近距离
+  if(m < 50)  return 2;  // B2 中距离
+  if(m < 100) return 3;  // B3 远距离
+  return 4;              // B4 视距边缘（B5 摆脱只能由对抗/NOS 产生）
+}
+let _sceneTokens=[]; // 扫描结果暂存
+
+async function scanSceneTokens(){
+  if(!obrReady||!window.OBR){ logCard('cf','地图联动','⚠️ 未连接枭熊，无法扫描地图token（纯浏览器打开时为单机模式）。'); renderLog(); return; }
+  const OBR=window.OBR;
+  try{
+    const items=await OBR.scene.items.getItems(
+      i=>i.type==='IMAGE' && ['CHARACTER','MOUNT','PROP'].includes(i.layer) && i.name);
+    if(!items.length){ logCard('cf','地图联动','⚠️ 地图上没有可用的token（角色/坐骑/道具层的图片）。'); renderLog(); return; }
+    // 已绑定的token标灰，防止重复导入
+    const boundIds=new Set(state.vehicles.map(v=>v.tokenId).filter(Boolean));
+    _sceneTokens=items;
+    const libOptions=Object.keys(LIB).map(k=>`<option value="${k}">${k}</option>`).join('');
+    document.getElementById('import-list').innerHTML=items.map((t,i)=>{
+      const bound=boundIds.has(t.id);
+      return `<div class="form-row" style="border-bottom:1px solid #22222f;padding:5px 0;${bound?'opacity:.4':''}">
+        <input type="checkbox" id="imp-chk-${i}" ${bound?'disabled':''}>
+        <span style="flex:1;min-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${t.name}">${t.name}${bound?'（已绑定）':''}</span>
+        <select id="imp-lib-${i}">${libOptions}</select>
+        <select id="imp-role-${i}"><option value="chaser">追击者</option><option value="leader">领跑者</option></select>
+      </div>`;
+    }).join('');
+    document.getElementById('import-modal').classList.remove('hidden');
+  }catch(e){ logCard('cf','地图联动','⚠️ 扫描失败：'+(e.message||e)); renderLog(); }
+}
+
+function importSelectedTokens(){
+  let count=0;
+  _sceneTokens.forEach((t,i)=>{
+    const chk=document.getElementById('imp-chk-'+i);
+    if(!chk||!chk.checked||chk.disabled) return;
+    const lib=document.getElementById('imp-lib-'+i).value;
+    const role=document.getElementById('imp-role-'+i).value;
+    const v=addVehRaw({ name:t.name, lib, role, driver:t.name,
+      agi:6, drive:4, ref:6, luck:2, cool:4, rep:2, nos:1,
+      band: role==='leader'?0:1, tokenId:t.id });
+    state.order.push(v.id);
+    count++;
+  });
+  closeModal('import-modal');
+  if(count){
+    logCard('info','地图联动','🔗 导入 '+count+' 个token：'+state.vehicles.filter(v=>v.tokenId).map(v=>v.name).join('、')+'。驾驶员属性为默认值，可用「📏测距」自动排带。');
+    save(); renderAll();
+  }
+}
+
+async function detectDistances(){
+  if(!obrReady||!window.OBR){ logCard('cf','地图联动','⚠️ 未连接枭熊，无法测距。'); renderLog(); return; }
+  const OBR=window.OBR;
+  const bound=state.vehicles.filter(v=>v.tokenId&&!v.destroyed);
+  if(!bound.length){ logCard('cf','地图联动','⚠️ 没有绑定token的车辆，先「扫描地图token导入」。'); renderLog(); return; }
+  try{
+    const dpi=await OBR.scene.grid.getDpi();
+    const mPerCell=+document.getElementById('grid-meters').value||2;
+    const items=await OBR.scene.items.getItems(bound.map(v=>v.tokenId));
+    const pos={};
+    items.forEach(t=>{ pos[t.id]={x:t.position.x, y:t.position.y}; });
+    // 原点：第一个未毁的领跑者；没有领跑者则取第一个绑定车辆
+    const anchor=bound.find(v=>v.role==='leader')||bound[0];
+    if(!pos[anchor.tokenId]){ logCard('cf','地图联动','⚠️ 原点车辆「'+anchor.name+'」的token不在当前场景。'); renderLog(); return; }
+    const lines=[];
+    bound.forEach(v=>{
+      if(v.id===anchor.id){ v.band=0; lines.push(v.name+'（原点）→ B0'); return; }
+      const p=pos[v.tokenId];
+      if(!p){ lines.push(v.name+'：token不在场景，保持 B'+v.band); return; }
+      const px=Math.hypot(p.x-pos[anchor.tokenId].x, p.y-pos[anchor.tokenId].y);
+      const meters=px/dpi*mPerCell;
+      const nb=bandFromMeters(meters);
+      lines.push(v.name+'：'+meters.toFixed(1)+'m → B'+v.band+'⇒B'+nb+(nb!==v.band?' ✦':''));
+      v.band=nb;
+    });
+    logCard('normal','📏 坐标测距','原点「'+anchor.name+'」（每格 '+mPerCell+'m）：<br>'+lines.join('<br>'));
+    checkEnd(); save(); renderAll();
+  }catch(e){ logCard('cf','地图联动','⚠️ 测距失败：'+(e.message||e)); renderLog(); }
+}
 
 /* =====================================================================
  * 弹窗工具 & 初始化
