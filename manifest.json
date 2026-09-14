@@ -1,8 +1,8 @@
 {
   "name": "赛博朋克红 · 角色卡",
-  "version": "3.6.0",
+  "version": "3.7.0",
   "manifest_version": 1,
-  "description": "赛博朋克红角色卡：自动卡解析，多角色，追踪，token绑定，点击掷骰+全房间动画历史，主题配色，token血条气泡，战斗轨HUD(顶部横条·token肖像·突袭/战斗准备·全员常驻可见)，先攻管理浮窗(人物/载具双表token扫描)。",
+  "description": "赛博朋克红角色卡：自动卡解析，多角色，追踪，token绑定，点击掷骰+全房间动画历史，主题配色，token血条气泡，战斗轨HUD(可拖拽·紧凑肖像卡·突袭/战斗准备·全员常驻可见)，先攻管理浮窗(人物/载具双表token扫描)。",
   "author": "小汤圆 × 红豆包",
   "background_url": "https://3183085363-svg.github.io/cpr-sheet/background.html",
   "action": {
