@@ -1,4 +1,23 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-  <rect x="2" y="2" width="20" height="20" rx="2" fill="#0a0a0f" stroke="#FCEE0A" stroke-width="1.5"/>
-  <text x="12" y="16" font-family="monospace" font-size="11" font-weight="bold" fill="#FCEE0A" text-anchor="middle">CPR</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#16161f"/>
+      <stop offset="1" stop-color="#07070c"/>
+    </linearGradient>
+  </defs>
+  <!-- 底板：深色圆角 + 黄描边 -->
+  <rect width="64" height="64" rx="14" fill="url(#bg)"/>
+  <rect x="2" y="2" width="60" height="60" rx="12" fill="none" stroke="#FCEE0A" stroke-width="2.5"/>
+  <!-- 2077 风斜切角：左上红、右下青 -->
+  <path d="M2.5 24 L2.5 14 Q2.5 2.5 14 2.5 L24 2.5 Z" fill="#ff2a3c"/>
+  <path d="M61.5 40 L61.5 50 Q61.5 61.5 50 61.5 L40 61.5 Z" fill="#05d9e8"/>
+  <!-- d10 骰子（CPR 规则用骰） -->
+  <g>
+    <polygon points="32,11 51,30 32,55 13,30" fill="#FCEE0A"/>
+    <polygon points="32,11 51,30 32,55 13,30" fill="none" stroke="#07070c" stroke-width="3" stroke-linejoin="round"/>
+    <!-- 棱面 -->
+    <path d="M32 11 L32 33 M13 30 L32 33 M51 30 L32 33 M32 55 L32 33" stroke="#07070c" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+    <!-- 顶部高光面 -->
+    <polygon points="32,11 51,30 32,33" fill="#fff49a" opacity=".55"/>
+  </g>
 </svg>
