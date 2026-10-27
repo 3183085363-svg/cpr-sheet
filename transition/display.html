@@ -11,45 +11,45 @@ html,body{width:100%;height:100%;overflow:hidden;background:transparent}
 .stage.leaving{transition:opacity .35s;opacity:0}
 .veil{position:absolute;inset:0;pointer-events:none;z-index:1}
 
-/* ============ 场景背景效果 ============ */
+/* ============ 场景背景效果（挂在 .veil 层，只罩背景不罩文字） ============ */
 /* 纯黑 */
 .bg-black{background:#000}
 /* 篝火：底部暖光脉动 */
-.bg-campfire{background:radial-gradient(ellipse 70% 45% at 50% 100%, rgba(255,120,20,.35), rgba(120,30,0,.18) 45%, #000 75%)}
-.bg-campfire::after{content:"";position:absolute;inset:auto 0 0 0;height:45%;background:radial-gradient(ellipse 45% 60% at 50% 100%, rgba(255,180,60,.5), transparent 70%);animation:fire 1.6s ease-in-out infinite alternate}
-@keyframes fire{from{opacity:.55;transform:scaleY(.92)}to{opacity:1;transform:scaleY(1.06)}}
+.bg-campfire{background:radial-gradient(ellipse 80% 55% at 50% 100%, rgba(255,122,20,.62), rgba(150,42,0,.38) 48%, #0a0400 78%)}
+.bg-campfire::after{content:"";position:absolute;inset:auto 0 0 0;height:55%;background:radial-gradient(ellipse 50% 70% at 50% 100%, rgba(255,190,70,.75), rgba(255,110,10,.25) 55%, transparent 75%);animation:fire 1.6s ease-in-out infinite alternate}
+@keyframes fire{from{opacity:.6;transform:scaleY(.92)}to{opacity:1;transform:scaleY(1.06)}}
 /* 日月轮替：夜空渐亮成晨光 */
-.bg-daynight{background:linear-gradient(180deg,#050510 0%,#0a1030 55%,#1a2a55 100%);animation:daynight var(--dur) linear forwards}
-@keyframes daynight{0%{filter:brightness(.55) hue-rotate(0)}55%{filter:brightness(.8)}100%{filter:brightness(1.5) hue-rotate(-25deg) saturate(1.3)}}
+.bg-daynight{background:linear-gradient(180deg,#0a0d24 0%,#14204d 55%,#2a4176 100%);animation:daynight var(--dur) linear forwards}
+@keyframes daynight{0%{filter:brightness(.7) hue-rotate(0)}55%{filter:brightness(1)}100%{filter:brightness(1.7) hue-rotate(-25deg) saturate(1.4)}}
 .bg-daynight .orb{position:absolute;width:110px;height:110px;border-radius:50%;top:18%;animation:orbit var(--dur) linear forwards}
 .bg-daynight .orb.moon{left:12%;background:radial-gradient(circle at 38% 35%,#f5f3e8,#b8b4a0 60%,#6a6858);box-shadow:0 0 60px rgba(240,235,210,.5)}
 .bg-daynight .orb.sun{right:12%;top:auto;bottom:-140px;background:radial-gradient(circle at 40% 35%,#fff7d0,#ffc93c 55%,#ff7b00);box-shadow:0 0 90px rgba(255,190,60,.7);animation-name:orbit-sun}
 @keyframes orbit{from{transform:translateY(0)}to{transform:translateY(-320px);opacity:0}}
 @keyframes orbit-sun{from{transform:translateY(0)}to{transform:translateY(-46vh);opacity:1}}
-/* 电流：暗底 + 闪电白闪 */
-.bg-electric{background:#03060c;animation:zapbg 1.1s steps(2,jump-none) infinite}
+/* 电流：暗蓝底 + 闪电白闪 */
+.bg-electric{background:linear-gradient(180deg,#071224,#0c1f3d);animation:zapbg 1.1s steps(2,jump-none) infinite}
 @keyframes zapbg{0%,88%{filter:none}90%{filter:brightness(2.6) hue-rotate(180deg)}92%{filter:none}95%{filter:brightness(1.9)}96%{filter:none}}
-.bg-electric::after{content:"⚡";position:absolute;top:8%;left:50%;transform:translateX(-50%);font-size:min(30vh,220px);opacity:.16;filter:drop-shadow(0 0 30px #05d9e8)}
+.bg-electric::after{content:"⚡";position:absolute;top:8%;left:50%;transform:translateX(-50%);font-size:min(30vh,220px);opacity:.3;filter:drop-shadow(0 0 30px #05d9e8)}
 /* 尘埃 */
-.bg-dust{background:radial-gradient(ellipse at 50% 40%,#14100a,#000 75%)}
-.dust span{position:absolute;width:4px;height:4px;border-radius:50%;background:rgba(240,220,170,.5);animation:float linear infinite}
-@keyframes float{from{transform:translateY(15vh);opacity:0}12%{opacity:.7}88%{opacity:.5}to{transform:translateY(-110vh);opacity:0}}
+.bg-dust{background:radial-gradient(ellipse at 50% 40%,#2b2010,#0a0602 78%)}
+.dust span{position:absolute;width:4px;height:4px;border-radius:50%;background:rgba(240,220,170,.6);animation:float linear infinite}
+@keyframes float{from{transform:translateY(15vh);opacity:0}12%{opacity:.8}88%{opacity:.6}to{transform:translateY(-110vh);opacity:0}}
 /* 雨夜 */
-.bg-rain{background:linear-gradient(180deg,#060a12,#0a1220)}
-.rain span{position:absolute;top:-12%;width:1.5px;height:11vh;background:linear-gradient(transparent,rgba(160,200,255,.5));animation:rainfall linear infinite}
+.bg-rain{background:linear-gradient(180deg,#0d1828,#1a2c48)}
+.rain span{position:absolute;top:-12%;width:1.5px;height:11vh;background:linear-gradient(transparent,rgba(170,210,255,.65));animation:rainfall linear infinite}
 @keyframes rainfall{to{transform:translateY(125vh)}}
 /* 星空 */
-.bg-stars{background:radial-gradient(ellipse at 50% 120%,#101a33,#02030a 70%)}
+.bg-stars{background:radial-gradient(ellipse at 50% 120%,#1c2c55,#040814 72%)}
 .stars span{position:absolute;width:2px;height:2px;border-radius:50%;background:#fff;animation:twinkle ease-in-out infinite alternate}
-@keyframes twinkle{from{opacity:.15}to{opacity:.95}}
+@keyframes twinkle{from{opacity:.2}to{opacity:1}}
 /* 血色渐晕 */
-.bg-blood{background:radial-gradient(ellipse at 50% 50%,#1a0205,#000 80%)}
-.bg-blood::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,transparent 40%,rgba(180,10,30,.35) 100%);animation:bloodpulse 2.2s ease-in-out infinite}
+.bg-blood{background:radial-gradient(ellipse at 50% 50%,#33050d,#050001 82%)}
+.bg-blood::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,transparent 38%,rgba(200,15,40,.5) 100%);animation:bloodpulse 2.2s ease-in-out infinite}
 @keyframes bloodpulse{0%,100%{opacity:.5}50%{opacity:1}}
 /* 爆炸闪光 */
-.bg-explosion{background:#000;animation:boomflash var(--dur) ease-out forwards}
+.bg-explosion{background:#100500;animation:boomflash var(--dur) ease-out forwards}
 @keyframes boomflash{0%{filter:brightness(5) saturate(2)}12%{filter:brightness(2.2) sepia(.8)}40%{filter:brightness(1.15)}100%{filter:brightness(1)}}
-.bg-explosion::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 55%,rgba(255,200,80,.85),rgba(255,80,10,.35) 40%,transparent 70%);animation:boomfade var(--dur) ease-out forwards}
+.bg-explosion::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 55%,rgba(255,210,90,.95),rgba(255,90,10,.5) 42%,transparent 72%);animation:boomfade var(--dur) ease-out forwards}
 @keyframes boomfade{from{opacity:1;transform:scale(.4)}to{opacity:0;transform:scale(1.6)}}
 
 /* ============ 内容区 ============ */
@@ -60,6 +60,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:transparent}
 .close{position:absolute;top:18px;right:22px;z-index:9;background:none;border:1px solid #444;color:#999;font-size:15px;width:34px;height:34px;border-radius:6px;cursor:pointer;opacity:.55}
 .close:hover{opacity:1;border-color:#999}
 .retry{position:absolute;inset:0;margin:auto;width:fit-content;height:fit-content;padding:14px 22px;background:#200;border:1px solid #f66;color:#fcc;border-radius:8px;font-size:15px;cursor:pointer}
+.sndhint{position:absolute;bottom:4.5vh;left:50%;transform:translateX(-50%);z-index:8;padding:8px 16px;border-radius:20px;background:rgba(20,20,30,.75);border:1px solid #555;color:#ddd;font-size:14px;pointer-events:none;animation:sndpulse 1.6s ease-in-out infinite}
+@keyframes sndpulse{0%,100%{opacity:.55}50%{opacity:1}}
 
 /* ============ 25 个文字动画模板 ============ */
 /* 进入类：动画跑一遍 */
@@ -125,9 +127,9 @@ html,body{width:100%;height:100%;overflow:hidden;background:transparent}
 .reduced .content .title,.reduced .content .icon{animation:k-fade .8s ease-out both !important}
 .reduced .bg-campfire::after,.reduced .bg-electric,.reduced .bg-blood::after{animation:none !important}
 </style>
-  <script type="module" crossorigin src="./assets/display-Ixd7ng8e.js"></script>
+  <script type="module" crossorigin src="./assets/display-GLu4DvVn.js"></script>
   <link rel="modulepreload" crossorigin href="./assets/protocol-BMfyqXpi.js">
-  <link rel="modulepreload" crossorigin href="./assets/sfx-DjtRvjh0.js">
+  <link rel="modulepreload" crossorigin href="./assets/sfx-BkWiTZ1r.js">
 </head>
 <body>
 <div class="stage bg-black" id="stage">
