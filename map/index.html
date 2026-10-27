@@ -442,6 +442,7 @@ function selectRoute(id){
     <div class="row"><span class="k">里程</span><span>${rt.km}</span></div>
     <div class="row"><span class="k">危险</span>${dots(rt.d)}</div>
     <div class="row"><span class="k">走向</span><span class="stops">${stops}</span></div>
+    <div class="cbtns"><button class="cbtn ok" onclick="location.href='region.html#${rt.id}'">🗺 分段区域图</button></div>
     <div class="gm-note">${rt.gm}</div>`;
 }
 
@@ -685,6 +686,7 @@ function selectCustom(id){
     <div class="row"><span class="k">危险</span>${dots(dg)}</div>
     <div class="row"><span class="k">走向</span><span class="stops">${stops}</span></div>
     <div class="cbtns">
+      <button class="cbtn ok" onclick="location.href='region.html#${cr.id}'">🗺 分段区域图</button>
       <button class="cbtn ok" id="cdEdit">✏️ 编辑</button>
       <button class="cbtn" id="cdExport">📋 导出文本</button>
       <button class="cbtn warn" id="cdDel">🗑 删除</button>
