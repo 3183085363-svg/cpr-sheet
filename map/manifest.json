@@ -1,0 +1,15 @@
+{
+  "name": "NUSA 2077 · 公路跑路图",
+  "version": "1.0.0",
+  "manifest_version": 1,
+  "description": "2077 年新美国公路跑路图：势力区标注、30 城市节点、9 条预设公路线（含铁锈线与南绕长路版）、自定义连线画路线（自动算里程/危险、可保存/导出/导入）、GM 注释。配合《铁锈线》公路模组使用。",
+  "author": "红豆包",
+  "action": {
+    "title": "公路跑路图",
+    "icon": "https://3183085363-svg.github.io/cpr-sheet/map/icon.svg",
+    "popover": "https://3183085363-svg.github.io/cpr-sheet/map/",
+    "height": 760,
+    "width": 960
+  },
+  "permissions": []
+}

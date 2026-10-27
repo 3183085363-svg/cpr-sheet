@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NUSA 2077 · 公路跑路图 | 夜之城纪事 GM 工具</title>
+<style>
+  :root{
+    --yellow:#fcee0a; --cyan:#05d9e8; --red:#ff2a6d; --orange:#ff9f1c;
+    --green:#7bf1a8; --purple:#b388ff; --pink:#ff6bd6; --blue:#4d8dff;
+    --bg:#0a0e1a; --panel:#101728; --panel2:#151f36; --line:#243457;
+    --text:#dce4f5; --muted:#7d8db0;
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  body{
+    background:var(--bg); color:var(--text);
+    font-family:"Microsoft YaHei","PingFang SC","Noto Sans SC",sans-serif;
+    min-height:100vh;
+  }
+  header{
+    padding:14px 20px; display:flex; align-items:baseline; gap:14px; flex-wrap:wrap;
+    border-bottom:2px solid var(--yellow); background:linear-gradient(90deg,#0d1322,#101a30);
+  }
+  header h1{font-size:20px; color:var(--yellow); letter-spacing:2px}
+  header h1 small{font-size:12px; color:var(--muted); letter-spacing:1px; font-weight:normal}
+  header .tag{font-size:11px; color:var(--cyan); border:1px solid var(--cyan); padding:2px 8px; border-radius:2px}
+  .layout{display:grid; grid-template-columns:1fr 340px; gap:0; align-items:start}
+  @media (max-width:980px){ .layout{grid-template-columns:1fr} }
+
+  /* ===== 地图区 ===== */
+  .mapwrap{position:relative; padding:12px; min-width:0}
+  .mapbox{position:relative; width:100%; border:1px solid var(--line); background:#05070f; overflow:hidden}
+  .mapbox img{width:100%; display:block; user-select:none; -webkit-user-drag:none}
+  .mapbox svg{position:absolute; inset:0; width:100%; height:100%}
+  .toolbar{
+    display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px; align-items:center;
+  }
+  .tgl{
+    font-size:12px; padding:5px 12px; cursor:pointer; border:1px solid var(--line);
+    background:var(--panel); color:var(--muted); border-radius:2px; user-select:none;
+    transition:all .15s;
+  }
+  .tgl.on{color:var(--yellow); border-color:var(--yellow); background:#1a2033; box-shadow:0 0 8px rgba(252,238,10,.25)}
+  .toolbar .hint{font-size:11px; color:var(--muted); margin-left:auto}
+
+  /* SVG 元素 */
+  .city-dot{cursor:pointer}
+  .city-dot circle{transition:r .15s}
+  .city-label{
+    font-size:17px; fill:#fff; paint-order:stroke; stroke:#000; stroke-width:4px;
+    pointer-events:none; font-weight:bold;
+  }
+  .city-label.en{font-size:11px; fill:#9db2d9; font-weight:normal}
+  .region-label{
+    font-size:26px; fill:#fff; paint-order:stroke; stroke:#000; stroke-width:6px;
+    letter-spacing:4px; font-weight:bold; pointer-events:none; opacity:.92;
+  }
+  .route{fill:none; stroke-width:7; stroke-linecap:round; stroke-linejoin:round;
+    cursor:pointer; opacity:.85; filter:drop-shadow(0 0 4px rgba(0,0,0,.8)); transition:all .15s}
+  .route:hover{stroke-width:10; opacity:1}
+  .route.dim{opacity:.12}
+  .route.active{stroke-width:11; opacity:1}
+  .route-dash{animation:dashmove 30s linear infinite}
+  @keyframes dashmove{to{stroke-dashoffset:-1000}}
+  .danger-ring{fill:none; stroke:var(--red); stroke-width:3; stroke-dasharray:8 6; opacity:.75; pointer-events:none}
+  .danger-tag{font-size:14px; fill:var(--red); paint-order:stroke; stroke:#000; stroke-width:4px; font-weight:bold; pointer-events:none}
+
+  /* ===== 详情面板 ===== */
+  aside{background:var(--panel); border-left:1px solid var(--line); padding:16px; position:sticky; top:0; max-height:100vh; overflow-y:auto}
+  aside h2{font-size:14px; color:var(--yellow); letter-spacing:2px; margin-bottom:10px; border-bottom:1px dashed var(--line); padding-bottom:8px}
+  .route-list{display:flex; flex-direction:column; gap:6px; margin-bottom:16px}
+  .rli{
+    display:flex; align-items:center; gap:8px; padding:7px 9px; cursor:pointer;
+    background:var(--panel2); border:1px solid var(--line); border-radius:3px; font-size:12px;
+    transition:all .15s;
+  }
+  .rli:hover{border-color:var(--yellow)}
+  .rli.active{border-color:var(--yellow); box-shadow:0 0 10px rgba(252,238,10,.2)}
+  .rli .chip{width:10px; height:10px; border-radius:2px; flex:none}
+  .rli .nm{flex:1}
+  .rli .lv{font-size:10px; color:var(--muted); white-space:nowrap}
+  .detail{font-size:12px; line-height:1.75}
+  .detail h3{font-size:16px; margin-bottom:2px}
+  .detail .en{color:var(--muted); font-size:11px; margin-bottom:8px; letter-spacing:1px}
+  .detail .row{display:flex; gap:6px; margin:4px 0; flex-wrap:wrap}
+  .detail .k{color:var(--muted); flex:none; min-width:52px}
+  .detail .stops{color:var(--cyan)}
+  .danger-dots span{display:inline-block; width:9px; height:9px; margin-right:3px; border-radius:1px; background:#2a3550}
+  .danger-dots span.on{background:var(--red); box-shadow:0 0 5px var(--red)}
+  .gm-note{
+    margin-top:8px; padding:8px 10px; background:#0d1424; border-left:3px solid var(--yellow);
+    color:#c9d4ec; font-size:11.5px; line-height:1.8;
+  }
+  .gm-note b{color:var(--yellow)}
+  .city-info{margin-top:14px; padding-top:10px; border-top:1px dashed var(--line)}
+  .legend{margin-top:14px; font-size:11px; color:var(--muted); line-height:1.9}
+  .legend i{display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:5px; vertical-align:-1px}
+
+  /* ===== 自定义路线 ===== */
+  .tgl.building{color:var(--yellow); border-color:var(--yellow); background:#241f08; box-shadow:0 0 10px rgba(252,238,10,.35); animation:pulse 1.6s ease-in-out infinite}
+  @keyframes pulse{50%{box-shadow:0 0 16px rgba(252,238,10,.55)}}
+  .route.custom{stroke-dasharray:none; stroke-width:5; opacity:.75}
+  .route.custom.active{stroke-width:9; opacity:1}
+  .route.building-line{stroke:var(--yellow); stroke-dasharray:4 10; stroke-width:5; opacity:.95; pointer-events:none}
+  .stop-num{font-size:15px; font-weight:bold; fill:#000; pointer-events:none}
+  .stop-num-bg{fill:var(--yellow); stroke:#000; stroke-width:1.5; pointer-events:none}
+  .custom-panel{margin-top:14px; padding-top:10px; border-top:1px dashed var(--line); font-size:12px}
+  .custom-panel h3{font-size:13px; color:var(--yellow); letter-spacing:1px; margin-bottom:8px}
+  .cstop{display:flex; align-items:center; gap:7px; padding:4px 6px; background:var(--panel2); border:1px solid var(--line); border-radius:3px; margin-bottom:4px; font-size:12px}
+  .cstop .no{width:18px; height:18px; border-radius:50%; background:var(--yellow); color:#000; font-weight:bold; font-size:11px; display:flex; align-items:center; justify-content:center; flex:none}
+  .cstop .km{margin-left:auto; color:var(--muted); font-size:10.5px; white-space:nowrap}
+  .cbtns{display:flex; flex-wrap:wrap; gap:6px; margin-top:8px}
+  .cbtn{font-size:11px; padding:5px 10px; cursor:pointer; border:1px solid var(--line); background:var(--panel2); color:var(--text); border-radius:3px; transition:all .15s}
+  .cbtn:hover{border-color:var(--yellow); color:var(--yellow)}
+  .cbtn.warn:hover{border-color:var(--red); color:var(--red)}
+  .cbtn.ok{border-color:var(--yellow); color:var(--yellow)}
+  .cbtn.ok:hover{background:rgba(252,238,10,.12)}
+  .csum{font-size:11.5px; color:var(--muted); line-height:1.8; margin-top:6px}
+  .csum b{color:var(--text)}
+  .cexport{width:100%; margin-top:8px; background:#0d1424; border:1px solid var(--line); color:#c9d4ec; font-size:11px; padding:8px; border-radius:3px; resize:vertical; min-height:74px; font-family:inherit}
+
+  /* ===== 底部总表 ===== */
+  .tables{padding:20px}
+  .tables h2{color:var(--yellow); font-size:16px; letter-spacing:2px; margin:18px 0 10px}
+  table{width:100%; border-collapse:collapse; font-size:12px}
+  th,td{border:1px solid var(--line); padding:7px 9px; text-align:left; vertical-align:top}
+  th{background:var(--panel2); color:var(--cyan); font-weight:bold; letter-spacing:1px}
+  td{background:var(--panel)}
+  td .dots{letter-spacing:2px; color:var(--red)}
+  .region-cards{display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:10px}
+  .rcard{background:var(--panel); border:1px solid var(--line); border-radius:4px; padding:12px; font-size:12px; line-height:1.8}
+  .rcard h4{font-size:14px; margin-bottom:6px; letter-spacing:1px}
+  .rcard p{color:#b9c6e2}
+  .rcard .en{color:var(--muted); font-size:11px}
+  footer{padding:16px 20px; color:var(--muted); font-size:11px; border-top:1px solid var(--line); line-height:1.8}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>NUSA 2077 · 公路跑路图 <small>// 夜之城纪事 GM 工具 · 红影纪元 32 年后</small></h1>
+  <span class="tag">势力区</span><span class="tag">公路线</span><span class="tag">危险点</span>
+</header>
+
+<div class="layout">
+  <div class="mapwrap">
+    <div class="toolbar">
+      <div class="tgl on" data-layer="regions">势力区标注</div>
+      <div class="tgl on" data-layer="cities">城市节点</div>
+      <div class="tgl on" data-layer="routes">公路路线</div>
+      <div class="tgl on" data-layer="danger">危险提示</div>
+      <div class="tgl" id="customToggle">✏️ 自定义路线</div>
+      <span class="hint" id="hint">点路线 / 城市看详情</span>
+    </div>
+    <div class="mapbox">
+      <img src="assets/nusa-2077.jpg" alt="NUSA 2077 地图">
+      <svg id="ov" viewBox="0 0 1920 1280" preserveAspectRatio="none"></svg>
+    </div>
+  </div>
+
+  <aside>
+    <h2>公路路线 / ROUTES</h2>
+    <div class="route-list" id="routeList"></div>
+    <div class="detail" id="detail">
+      <h3>选一条路线</h3>
+      <p class="en">点击地图上的彩色路线，或上方列表。</p>
+    </div>
+    <div class="city-info" id="cityInfo" style="display:none"></div>
+    <div class="custom-panel" id="customPanel" style="display:none"></div>
+    <div class="legend" id="legend"></div>
+  </aside>
+</div>
+
+<div class="tables">
+  <h2>◤ 势力区 / 2077 年美国格局</h2>
+  <div class="region-cards" id="regionCards"></div>
+
+  <h2>◤ 公路路线总表</h2>
+  <table id="routeTable">
+    <thead><tr><th>路线</th><th>走向</th><th>里程</th><th>危险</th><th>一句话</th></tr></thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<footer>
+  底图：Cyberpunk 2077 官方 NUSA 地图（CD Projekt RED 社区播客披露版）。标注与路线为 GM 二创工具，配合《夜之城纪事》公路模组使用。<br>
+  时间线口径：2077 年 · 统一战争结束后 · 迈尔斯总统第三任期。2077 与 2045（红）的州归属不同，跑团前先看势力区卡片。
+</footer>
+
+<script>
+// ================= 数据 =================
+const W = 1920, H = 1280;
+const FACTION = {
+  confed:  { n:"太平洋联邦", c:"#8b7bff" },
+  western: { n:"西部诸州",   c:"#b39dff" },
+  nusa:    { n:"新美利坚",   c:"#4d8dff" },
+  texas:   { n:"德州共和国", c:"#ff5252" },
+  free:    { n:"自由市",     c:"#fcee0a" },
+};
+
+// 城市节点：x/y 为归一化坐标
+const CITIES = {
+  nightcity:  { n:"夜之城", en:"Night City", f:"free", d:5, x:.168, y:.587, big:true,
+    note:"自由市，谁都不管也谁都管。进城过德尔科罗纳多湾大桥，桥头有企业雇佣军的随机抽查。城里 24 个区，跑团的起点和终点。" },
+  seattle:    { n:"西雅图", en:"Seattle", f:"confed", d:2, x:.145, y:.185,
+    note:"太平洋联邦首府圈。生物技术公司在此圈地搞实验生态林——林子里有他们放出来的东西。" },
+  portland:   { n:"波特兰", en:"Portland", f:"confed", d:2, x:.133, y:.245,
+    note:"太平洋联邦的贸易港，走私客的天堂。关卡松，规矩少。" },
+  la:         { n:"洛杉矶", en:"Los Angeles", f:"nusa", d:4, x:.21, y:.63,
+    note:"1998 年 10.5 级地震淹了三分之一，烂尾至今。南加州已回归 NUSA，但城里基本是帮派自治。" },
+  sandiego:   { n:"圣迭戈", en:"San Diego", f:"nusa", d:3, x:.225, y:.665,
+    note:"南加州联合自由州旧首府。墨西哥墙以北最大的边境市场。" },
+  reno:       { n:"雷诺", en:"Reno", f:"western", d:3, x:.20, y:.45,
+    note:"西部诸州的赌城，流浪者商队常在此补给、换手、销赃。" },
+  vegas:      { n:"拉斯维加斯", en:"Las Vegas", f:"western", d:4, x:.235, y:.515,
+    note:"内华达自由州的核心。赌业背后是军用科技的洗钱管道。" },
+  slc:        { n:"盐湖城", en:"Salt Lake City", f:"western", d:2, x:.30, y:.42,
+    note:"犹他已在统一战争中回归 NUSA，但地图上看仍贴着西部诸州混。宗教武装民兵把守的补给点。" },
+  denver:     { n:"丹佛", en:"Denver", f:"western", d:3, x:.355, y:.465,
+    note:"落基山门户。科罗拉多自由州，进山的路冬天全封。" },
+  phoenix:    { n:"凤凰城", en:"Phoenix", f:"western", d:4, x:.315, y:.585,
+    note:"亚利桑那自由州。城外的荒漠是游牧部落的地盘，进城前先想好过路费给谁。" },
+  albuquerque:{ n:"阿尔伯克基", en:"Albuquerque", f:"western", d:3, x:.375, y:.56,
+    note:"新墨西哥自由州。老 66 号走廊上唯一像样的中途站。" },
+  omaha:      { n:"奥马哈", en:"Omaha", f:"nusa", d:2, x:.495, y:.375,
+    note:"中西部粮仓枢纽，农商集团的粮列车从这里发车。" },
+  kc:         { n:"堪萨斯城", en:"Kansas City", f:"nusa", d:3, x:.52, y:.44,
+    note:"南北货运十字路口。车队在这里重组、换司机、换假证件。" },
+  minneapolis:{ n:"明尼阿波利斯", en:"Minneapolis", f:"nusa", d:2, x:.60, y:.26,
+    note:"北境大城，NUSA 实控。冬天路面结冰比子弹更要命。" },
+  chicago:    { n:"芝加哥", en:"Chicago", f:"nusa", d:5, x:.685, y:.30,
+    note:"2012 年生化瘟疫的隔离区，大部分市区仍是污染废土。所有东行的车都得绕北侧检疫走廊。" },
+  detroit:    { n:"底特律", en:"Detroit", f:"nusa", d:3, x:.73, y:.265,
+    note:"汽车城。马德堡车库就在城南——这是「横炮」丹·马德堡出发的地方。" },
+  pittsburgh: { n:"匹兹堡", en:"Pittsburgh", f:"nusa", d:2, x:.80, y:.33,
+    note:"钢厂废墟上重建的军工城，给 NUSA 陆军造装甲车。" },
+  boston:     { n:"波士顿", en:"Boston", f:"nusa", d:2, x:.945, y:.285,
+    note:"BosWash 走廊北端。NUSA 的「开化文明」从这里开始。" },
+  nyc:        { n:"纽约", en:"New York", f:"nusa", d:3, x:.925, y:.335,
+    note:"1993 年毒枭在曼哈顿引爆过战术核弹，洛克菲勒中心废墟还在。现在归 NUSA 直管，华尔街改名叫欧罗巴金融区。" },
+  dc:         { n:"华盛顿", en:"Washington D.C.", f:"nusa", d:2, x:.895, y:.405,
+    note:"新美利坚首都。迈尔斯总统在这。满街都是 FIA 的眼线。" },
+  atlanta:    { n:"亚特兰大", en:"Atlanta", f:"nusa", d:3, x:.775, y:.52,
+    note:"东南物流枢纽。媒体巨头总部扎堆，54 台在这有最大的转播塔。" },
+  nashville:  { n:"纳什维尔", en:"Nashville", f:"nusa", d:2, x:.715, y:.50,
+    note:"摇滚和雇佣兵共存的地方。I-40 的东端起点。" },
+  memphis:    { n:"孟菲斯", en:"Memphis", f:"nusa", d:3, x:.66, y:.545,
+    note:"密西西比河渡口。猫王永生教（The Elvises）的老巢就在这河对岸。" },
+  neworleans: { n:"新奥尔良", en:"New Orleans", f:"nusa", d:4, x:.65, y:.705,
+    note:"半淹的沼泽城。官方管不着，走私者的自由港，河盗比警察多。" },
+  jacksonville:{ n:"杰克逊维尔", en:"Jacksonville", f:"nusa", d:2, x:.825, y:.62,
+    note:"I-10 东端。佛罗里达北边还干着，南边已经泡海里了。" },
+  miami:      { n:"迈阿密", en:"Miami", f:"nusa", d:4, x:.83, y:.755,
+    note:"沿海淹了大半，有钱人住浮城「亚特兰蒂斯」。古巴帮和公司的地盘犬牙交错。" },
+  dallas:     { n:"达拉斯", en:"Dallas", f:"texas", d:3, x:.50, y:.60,
+    note:"德州共和国北大门。石油带的心脏，共和国海关查得最严的地方。" },
+  austin:     { n:"奥斯汀", en:"Austin", f:"texas", d:2, x:.505, y:.685,
+    note:"共和国首都。满街都是「别惹德州」的旗子，他们认真的。" },
+  houston:    { n:"休斯顿", en:"Houston", f:"texas", d:3, x:.55, y:.715,
+    note:"太空港城。轨道货运都从这上天，航天产业链的最后堡垒。" },
+  sanantonio: { n:"圣安东尼奥", en:"San Antonio", f:"texas", d:3, x:.515, y:.72,
+    note:"共和国南方军管区。往墨西哥方向的路上全是检查站。" },
+  elpaso:     { n:"埃尔帕索", en:"El Paso", f:"texas", d:4, x:.415, y:.645,
+    note:"德州、西部诸州、墨西哥三方交界处。黑市、雇佣兵中转站、人口贩子——什么都有。" },
+};
+
+// 城市经纬度（用于自定义路线算里程，haversine × 1.25 公路系数）
+const LL = {
+  nightcity:[35.4,-120.9], seattle:[47.6,-122.3], portland:[45.5,-122.7], la:[34.05,-118.2],
+  sandiego:[32.7,-117.2], reno:[39.5,-119.8], vegas:[36.2,-115.1], slc:[40.8,-111.9],
+  denver:[39.7,-105.0], phoenix:[33.4,-112.1], albuquerque:[35.1,-106.6], omaha:[41.3,-96.0],
+  kc:[39.1,-94.6], minneapolis:[45.0,-93.3], chicago:[41.9,-87.6], detroit:[42.3,-83.0],
+  pittsburgh:[40.4,-80.0], boston:[42.4,-71.1], nyc:[40.7,-74.0], dc:[38.9,-77.0],
+  atlanta:[33.75,-84.4], nashville:[36.2,-86.8], memphis:[35.1,-90.0], neworleans:[29.95,-90.1],
+  jacksonville:[30.3,-81.7], miami:[25.8,-80.2], dallas:[32.8,-96.8], austin:[30.3,-97.7],
+  houston:[29.8,-95.4], sanantonio:[29.4,-98.5], elpaso:[31.8,-106.5],
+};
+function havKm(a, b){
+  const R = 6371, rad = Math.PI/180;
+  const [la1, lo1] = LL[a], [la2, lo2] = LL[b];
+  const dLa = (la2-la1)*rad, dLo = (lo2-lo1)*rad;
+  const h = Math.sin(dLa/2)**2 + Math.cos(la1*rad)*Math.cos(la2*rad)*Math.sin(dLo/2)**2;
+  return 2*R*Math.asin(Math.sqrt(h));
+}
+function routeKm(stops){
+  let s = 0;
+  for (let i = 1; i < stops.length; i++) s += havKm(stops[i-1], stops[i]);
+  return Math.round(s * 1.25 / 10) * 10;  // 公路系数 1.25
+}
+function routeDanger(stops){
+  return Math.max(...stops.map(k => CITIES[k].d));
+}
+
+// 势力区标注（叠中文标签）
+const REGIONS = [
+  { n:"太平洋联邦", en:"Pacific Confederation", x:.175, y:.315, c:"#8b7bff",
+    desc:"华盛顿、俄勒冈、爱达荷和北加州拼成的松散联盟。有自己的民兵，也给 NUSA 出租军事基地。夜之城名义上不属于它，但经济上高度绑定。生物技术公司在这里圈地做生态实验。" },
+  { n:"西部诸州", en:"The Western States", x:.375, y:.485, c:"#b39dff",
+    desc:"内华达、犹他、科罗拉多、亚利桑那、新墨西哥、怀俄明这一片。犹他、南达科他等在统一战争后已回归 NUSA，但地图上仍被画成西部区块——实际控制力薄弱，荒漠归游牧部落和劫掠者。" },
+  { n:"新美利坚合众国", en:"NUSA", x:.66, y:.485, c:"#4d8dff",
+    desc:"首都华盛顿，总统罗莎琳德·迈尔斯（第三任期）。实控区主要是 BosWash 走廊（波士顿—华盛顿）加纽约到迈阿密一线。密西西比河以西基本是纸面主权。正图谋重新统一全部 50 州。" },
+  { n:"德克萨斯共和国", en:"Republic of Texas", x:.515, y:.66, c:"#ff5252",
+    desc:"1999 年第一个独立的自由州，现在是个货真价实的共和国。统一战争里两边都打——既打 NUSA 也打自由州联盟。有海关、有军队、有太空港。过境要通行证，或者钱。" },
+  { n:"夜之城（自由市）", en:"Night City", x:.135, y:.655, c:"#fcee0a",
+    desc:"不属于任何一方的自由市，北加州自由州的独立飞地。2023 年荒坂塔核爆后重建，2070 年统一战争里靠荒坂回归保住了独立。美国梦的最佳试验场，也是坟场。" },
+];
+
+// 公路路线
+const ROUTES = [
+  { id:"rustbelt", n:"铁锈线", en:"Detroit → Night City", color:"#ff9f1c", d:4, km:"约 4,600 km",
+    stops:["detroit","chicago","kc","denver","slc","reno","nightcity"],
+    one:"丹·马德堡的来路：从汽车城一路向西，绕开芝加哥毒区进山。",
+    gm:"<b>模组主线推荐。</b>底特律出发 → 芝加哥强制绕行北侧检疫走廊（伪造通行证或硬闯，二选一）→ 堪萨斯城重组车队 → 丹佛进山前最后的低价补给 → 雷诺销赃点 → 夜之城。适合做成 4-6 场的完整公路团。" },
+  { id:"rustbelt_long", n:"铁锈线·南绕长路版", en:"Detroit → 南线大弧 → Night City", color:"#ff6bd6", d:5, km:"约 5,900 km",
+    stops:["detroit","nashville","memphis","neworleans","houston","austin","sanantonio","elpaso","phoenix","la","nightcity"],
+    one:"同一条寻人路，绕了整个南方：下密西西比河、穿德州共和国、再走老 66 进加州。",
+    gm:"<b>21 场公路片版推荐路线。</b>比标准铁锈线长 60%，多三种完全不同的地貌和规则：密西西比河渡口（猫王永生教收过桥费）、德州海关（通行证或假证）、埃尔帕索三方黑市。密钥持有者可改放：新奥尔良走私港（一）、奥斯汀（二）、凤凰城游牧部落（三）。盐湖城记仇机制和 51 区抉择可平移到凤凰城—洛杉矶段。" },
+  { id:"i80", n:"I-80 大陆横贯", en:"Chicago → Night City", color:"#05d9e8", d:4, km:"约 4,000 km",
+    stops:["chicago","omaha","denver","slc","reno","nightcity"],
+    one:"流浪者货运主干线，中西部废田段劫掠者出没。",
+    gm:"爱荷华—内布拉斯加段是枯死的「玉米带」，劫掠者开改装皮卡劫粮车。盐湖城民兵会查车，塞 200eb 免检。内华达段远离 51 区军管区——那条岔路没有出口。" },
+  { id:"i40", n:"I-40 幽灵公路", en:"Nashville → Night City", color:"#ff2a6d", d:5, km:"约 4,000 km",
+    stops:["nashville","memphis","albuquerque","phoenix","la","nightcity"],
+    one:"老 66 号走廊。最浪漫的线，也是死最多人的线。",
+    gm:"孟菲斯渡密西西比河要防猫王永生教的「圣地巡礼团」收过桥费。新墨西哥段 500km 无补给无信号，水箱带双份。凤凰城外围的游牧部落收费站交钱放行——或者试试不交，他们会让你记一辈子。" },
+  { id:"i10", n:"I-10 南线", en:"Jacksonville → Los Angeles", color:"#7bf1a8", d:4, km:"约 4,400 km",
+    stops:["jacksonville","neworleans","houston","sanantonio","elpaso","phoenix","la"],
+    one:"沼泽、海关、黑市。南线不缺生意，缺的是活着送到。",
+    gm:"新奥尔良段路基半淹，夜里河盗驾气垫船劫车。进德州共和国要通行证（奥斯汀可办，或黑市买假证）。埃尔帕索三方交界，什么货都能换手，什么人都能卖掉。" },
+  { id:"i95", n:"I-95 BosWash 动脉", en:"Boston → Miami", color:"#4d8dff", d:2, km:"约 3,100 km",
+    stops:["boston","nyc","dc","atlanta","jacksonville","miami"],
+    one:"NUSA 的主动脉。最安全，也最难走私。",
+    gm:"检查站每 80km 一处，证件扫描 + 视网膜比对。巴尔的摩废墟段夜间禁行，官方说法是「路面坍塌」，实际是什么自己查。想运违禁品走这条线，先想好怎么过 FIA 的眼。" },
+  { id:"p101", n:"101 太平洋公路", en:"Seattle → San Diego", color:"#fcee0a", d:3, km:"约 2,300 km",
+    stops:["seattle","portland","nightcity","la","sandiego"],
+    one:"海岸线。风景最好的路，检查站最少的线。",
+    gm:"太平洋联邦段几乎不设卡。进夜之城过德尔科罗纳多湾大桥有企业雇佣军抽查——他们只看值不值得抢。LA 以南的 1 号公路在 1998 年大地震后多处改道，导航别信旧地图。" },
+  { id:"i90", n:"I-90 北境线", en:"Seattle → Boston", color:"#b388ff", d:3, km:"约 5,400 km",
+    stops:["seattle","minneapolis","chicago","detroit","pittsburgh","boston"],
+    one:"横穿大陆的最北线，太平洋联邦与 NUSA 的边界摩擦带。",
+    gm:"全程近 5000km，最长的横贯线。蒙大拿段是自由州民兵地盘，他们不认 NUSA 的证件但认 NUSA 的钱。冬季封路期 11 月到 3 月。斯波坎以西归联邦民兵，以东归谁也不清楚。" },
+  { id:"texas", n:"德州环线", en:"Dallas 环线", color:"#ff5252", d:4, km:"约 2,000 km",
+    stops:["dallas","austin","houston","sanantonio","elpaso"],
+    one:"共和国境内的环线：石油、太空港、边境军管区。",
+    gm:"共和国境内道路状况全美最好——他们自己掏钱养的。代价是海关和军警密度也最高。休斯顿太空港能接轨道货运的单子，圣安东尼奥往南别乱开，那是美墨边境的火力摩擦带。" },
+];
+
+// 危险提示点
+const DANGERS = [
+  { x:.685, y:.27, r:60, t:"芝加哥生化隔离区 · 绕行" },
+  { x:.42, y:.52, r:70, t:"新墨西哥荒漠 500km 无人区" },
+  { x:.30, y:.47, r:55, t:"51 区军管区 · 勿入" },
+  { x:.168, y:.587, r:45, t:"夜之城 · 全员恶人" },
+];
+
+// ================= 渲染 =================
+const svg = document.getElementById("ov");
+const NS = "http://www.w3.org/2000/svg";
+const px = v => v * W, py = v => v * H;
+function el(tag, attrs){ const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); return e; }
+
+const gDanger  = el("g", { id:"L-danger" });
+const gRoutes  = el("g", { id:"L-routes" });
+const gCustom  = el("g", { id:"L-custom" });
+const gCities  = el("g", { id:"L-cities" });
+const gRegions = el("g", { id:"L-regions" });
+svg.appendChild(gDanger); svg.appendChild(gRoutes); svg.appendChild(gCustom); svg.appendChild(gCities); svg.appendChild(gRegions);
+
+// 势力区中文标签
+for (const r of REGIONS) {
+  const t = el("text", { class:"region-label", x:px(r.x), y:py(r.y), "text-anchor":"middle", fill:r.c });
+  t.textContent = r.n;
+  t.style.fill = r.c;
+  gRegions.appendChild(t);
+}
+
+// 危险提示
+for (const dz of DANGERS) {
+  gDanger.appendChild(el("circle", { class:"danger-ring", cx:px(dz.x), cy:py(dz.y), r:dz.r }));
+  const t = el("text", { class:"danger-tag", x:px(dz.x), y:py(dz.y) - dz.r - 10, "text-anchor":"middle" });
+  t.textContent = "⚠ " + dz.t;
+  gDanger.appendChild(t);
+}
+
+// 路线
+for (const rt of ROUTES) {
+  const pts = rt.stops.map(k => px(CITIES[k].x) + "," + py(CITIES[k].y)).join(" ");
+  const pl = el("polyline", { class:"route", id:"rt-" + rt.id, points:pts, stroke:rt.color, "stroke-dasharray":"26 14" });
+  pl.classList.add("route-dash");
+  pl.addEventListener("click", () => selectRoute(rt.id));
+  gRoutes.appendChild(pl);
+}
+
+// 城市
+for (const key in CITIES) {
+  const c = CITIES[key];
+  const g = el("g", { class:"city-dot" });
+  const col = FACTION[c.f].c;
+  const r = c.big ? 13 : 8;
+  g.appendChild(el("circle", { cx:px(c.x), cy:py(c.y), r:r + 5, fill:"rgba(0,0,0,.55)" }));
+  g.appendChild(el("circle", { cx:px(c.x), cy:py(c.y), r:r, fill:col, stroke:"#000", "stroke-width":2 }));
+  const ty = py(c.y) + (c.big ? -22 : -14);
+  const t = el("text", { class:"city-label", x:px(c.x), y:ty, "text-anchor":"middle" });
+  t.textContent = c.n;
+  g.appendChild(t);
+  g.addEventListener("click", (ev) => { ev.stopPropagation(); onCityClick(key); });
+  gCities.appendChild(g);
+}
+
+// ================= 交互 =================
+const layerMap = { regions:gRegions, cities:gCities, routes:gRoutes, danger:gDanger };
+document.querySelectorAll(".tgl").forEach(b => {
+  b.addEventListener("click", () => {
+    b.classList.toggle("on");
+    const on = b.classList.contains("on");
+    layerMap[b.dataset.layer].style.display = on ? "" : "none";
+  });
+});
+
+const detail = document.getElementById("detail");
+const cityInfo = document.getElementById("cityInfo");
+
+function dots(d){
+  let s = "";
+  for (let i = 1; i <= 5; i++) s += `<span class="${i<=d?'on':''}"></span>`;
+  return `<span class="danger-dots">${s}</span>`;
+}
+
+function selectRoute(id){
+  const rt = ROUTES.find(r => r.id === id);
+  document.querySelectorAll(".route").forEach(p => {
+    p.classList.toggle("active", p.id === "rt-" + id);
+    p.classList.toggle("dim", p.id !== "rt-" + id);
+  });
+  document.querySelectorAll(".rli").forEach(li => li.classList.toggle("active", li.dataset.id === id));
+  cityInfo.style.display = "none";
+  customPanel.style.display = "none";
+  const stops = rt.stops.map(k => CITIES[k].n).join(" → ");
+  detail.innerHTML = `
+    <h3 style="color:${rt.color}">◤ ${rt.n}</h3>
+    <div class="en">${rt.en}</div>
+    <div class="row"><span class="k">里程</span><span>${rt.km}</span></div>
+    <div class="row"><span class="k">危险</span>${dots(rt.d)}</div>
+    <div class="row"><span class="k">走向</span><span class="stops">${stops}</span></div>
+    <div class="gm-note">${rt.gm}</div>`;
+}
+
+function selectCity(key){
+  const c = CITIES[key];
+  const f = FACTION[c.f];
+  cityInfo.style.display = "";
+  cityInfo.innerHTML = `
+    <h3 style="font-size:15px;color:${f.c}">◈ ${c.n} <span style="font-size:11px;color:var(--muted)">${c.en}</span></h3>
+    <div class="row" style="font-size:11.5px"><span class="k">所属</span><span style="color:${f.c}">${f.n}</span></div>
+    <div class="row"><span class="k" style="font-size:11.5px">危险</span>${dots(c.d)}</div>
+    <p style="font-size:11.5px;line-height:1.8;color:#c9d4ec;margin-top:6px">${c.note}</p>`;
+}
+
+// 路线列表（预设 + 自定义）
+const rl = document.getElementById("routeList");
+let customRoutes = [];
+try { customRoutes = JSON.parse(localStorage.getItem("nusa_custom_routes") || "[]"); } catch(e) {}
+
+function saveCustoms(){ localStorage.setItem("nusa_custom_routes", JSON.stringify(customRoutes)); }
+
+function renderRouteList(){
+  rl.innerHTML = "";
+  for (const rt of ROUTES) {
+    const li = document.createElement("div");
+    li.className = "rli"; li.dataset.id = rt.id;
+    li.innerHTML = `<span class="chip" style="background:${rt.color}"></span><span class="nm">${rt.n}</span><span class="lv">${"▮".repeat(rt.d)}${"▯".repeat(5-rt.d)}</span>`;
+    li.addEventListener("click", () => selectRoute(rt.id));
+    rl.appendChild(li);
+  }
+  for (const cr of customRoutes) {
+    const li = document.createElement("div");
+    li.className = "rli"; li.dataset.id = cr.id;
+    li.innerHTML = `<span class="chip" style="background:#fff"></span><span class="nm">✏️ ${cr.name}</span><span class="lv" style="color:var(--muted)">${cr.stops.length} 站</span>`;
+    li.addEventListener("click", () => selectCustom(cr.id));
+    rl.appendChild(li);
+  }
+}
+renderRouteList();
+
+// ================= 自定义路线构建器 =================
+const customPanel = document.getElementById("customPanel");
+const customToggle = document.getElementById("customToggle");
+const hint = document.getElementById("hint");
+let building = false;      // 是否处于连线模式
+let buildStops = [];       // 正在编辑的城市 key 链
+let editingId = null;      // 正在编辑的已存路线 id（null=新建）
+
+function onCityClick(key){
+  if (building) { addStop(key); return; }
+  selectCity(key);
+}
+
+customToggle.addEventListener("click", () => {
+  building = !building;
+  customToggle.classList.toggle("building", building);
+  hint.textContent = building ? "连线模式：依次点城市，点最后一个可撤销" : "点路线 / 城市看详情";
+  if (building) {
+    // 清空选中态，专注连线
+    document.querySelectorAll(".route").forEach(p => p.classList.remove("active","dim"));
+    document.querySelectorAll(".rli").forEach(li => li.classList.remove("active"));
+    cityInfo.style.display = "none";
+    detail.innerHTML = `<h3 style="color:var(--yellow)">✏️ 画你自己的路</h3>
+      <p class="en">CUSTOM ROUTE</p>
+      <div class="gm-note">依次点击地图上的城市，连成你要跑的线。里程和危险自动算。<br>点<b>最后一个点</b>撤销一步。画完在右侧保存。</div>`;
+    renderBuilder();
+  } else {
+    cancelBuild();
+  }
+});
+
+function addStop(key){
+  // 点最后一个 = 撤销
+  if (buildStops.length && buildStops[buildStops.length-1] === key) {
+    buildStops.pop();
+  } else {
+    buildStops.push(key);
+  }
+  renderBuilder();
+}
+
+function clearBuildMarks(){
+  gCustom.querySelectorAll(".build-mark").forEach(e => e.remove());
+}
+
+function renderBuilder(){
+  clearBuildMarks();
+  // 连线
+  if (buildStops.length > 1) {
+    const pts = buildStops.map(k => px(CITIES[k].x) + "," + py(CITIES[k].y)).join(" ");
+    const pl = el("polyline", { class:"route building-line build-mark", points:pts });
+    gCustom.appendChild(pl);
+  }
+  // 序号圆点
+  buildStops.forEach((k, i) => {
+    const c = CITIES[k];
+    const bx = px(c.x), by = py(c.y) - (c.big ? 40 : 30);
+    const g = el("g", { class:"build-mark" });
+    g.appendChild(el("circle", { class:"stop-num-bg", cx:bx, cy:by, r:11 }));
+    const t = el("text", { class:"stop-num", x:bx, y:by + 5, "text-anchor":"middle" });
+    t.textContent = i + 1;
+    g.appendChild(t);
+    gCustom.appendChild(g);
+  });
+  // 面板
+  customPanel.style.display = "";
+  let html = `<h3>✏️ ${editingId ? "编辑路线" : "新路线"}（${buildStops.length} 站）</h3>`;
+  if (!buildStops.length) {
+    html += `<div class="csum">还没选城市。点地图上的圆点开始。</div>`;
+  } else {
+    buildStops.forEach((k, i) => {
+      const c = CITIES[k];
+      const seg = i > 0 ? `+${Math.round(havKm(buildStops[i-1], k) * 1.25)} km` : "起点";
+      html += `<div class="cstop"><span class="no">${i+1}</span><span>${c.n}</span><span class="km">${seg}</span></div>`;
+    });
+    if (buildStops.length > 1) {
+      html += `<div class="csum">总里程 <b>约 ${routeKm(buildStops).toLocaleString()} km</b> · 危险峰值 <b>${"▮".repeat(routeDanger(buildStops))}${"▯".repeat(5-routeDanger(buildStops))}</b>（取途经城市最高值）</div>`;
+    }
+  }
+  html += `<div class="cbtns">
+    <button class="cbtn" id="cbUndo" ${buildStops.length?"":"disabled"}>↩ 撤销一步</button>
+    <button class="cbtn warn" id="cbClear" ${buildStops.length?"":"disabled"}>✕ 清空</button>
+    <button class="cbtn ok" id="cbSave" ${buildStops.length>1?"":"disabled"}>💾 保存路线</button>
+  </div>
+  <div class="cbtns">
+    <button class="cbtn" id="cbExportFile">📤 导出全部路线 (.json)</button>
+    <button class="cbtn" id="cbImportFile">📥 导入路线文件</button>
+  </div>`;
+  customPanel.innerHTML = html;
+  const $ = id => document.getElementById(id);
+  $("cbUndo")?.addEventListener("click", () => { buildStops.pop(); renderBuilder(); });
+  $("cbClear")?.addEventListener("click", () => { buildStops = []; editingId = null; renderBuilder(); });
+  $("cbSave")?.addEventListener("click", saveBuild);
+  $("cbExportFile")?.addEventListener("click", exportRoutesFile);
+  $("cbImportFile")?.addEventListener("click", importRoutesFile);
+}
+
+// 导出全部自定义路线为 JSON 文件（发给队友导入即可共享）
+function exportRoutesFile(){
+  if (!customRoutes.length) { alert("还没有保存过自定义路线。"); return; }
+  const data = { app:"nusa-2077-roadtrip", version:1, routes:customRoutes };
+  const blob = new Blob([JSON.stringify(data, null, 1)], { type:"application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "nusa2077-自定义路线.json";
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+// 导入路线文件：合并进本地，跳过重复与未知城市
+function importRoutesFile(){
+  const inp = document.createElement("input");
+  inp.type = "file"; inp.accept = ".json,application/json";
+  inp.addEventListener("change", () => {
+    const f = inp.files[0];
+    if (!f) return;
+    const rd = new FileReader();
+    rd.onload = () => {
+      try {
+        const data = JSON.parse(rd.result);
+        const list = Array.isArray(data) ? data : data.routes;
+        if (!Array.isArray(list)) throw new Error("格式不对");
+        let added = 0, skipped = 0;
+        for (const r of list) {
+          if (!r || typeof r.name !== "string" || !Array.isArray(r.stops)) { skipped++; continue; }
+          const stops = r.stops.filter(k => CITIES[k]);
+          if (stops.length < 2) { skipped++; continue; }
+          const dup = customRoutes.some(x => x.name === r.name && x.stops.join() === stops.join());
+          if (dup) { skipped++; continue; }
+          customRoutes.push({ id:"c" + Date.now().toString(36) + Math.random().toString(36).slice(2,5), name:r.name.slice(0,30), stops });
+          added++;
+        }
+        saveCustoms(); drawCustoms(); renderRouteList();
+        alert(`导入完成：新增 ${added} 条${skipped ? `，跳过 ${skipped} 条（重复或无效）` : ""}`);
+      } catch (e) {
+        alert("导入失败：文件不是有效的路线 JSON（" + e.message + "）");
+      }
+    };
+    rd.readAsText(f);
+  });
+  inp.click();
+}
+
+function saveBuild(){
+  if (buildStops.length < 2) return;
+  const def = editingId ? (customRoutes.find(r=>r.id===editingId)?.name || "") : "";
+  const name = (prompt("给这条路起个名字：", def || "我的路线") || "").trim();
+  if (!name) return;
+  if (editingId) {
+    const r = customRoutes.find(r => r.id === editingId);
+    if (r) { r.name = name; r.stops = buildStops.slice(); }
+  } else {
+    customRoutes.push({ id:"c" + Date.now().toString(36), name, stops:buildStops.slice() });
+  }
+  saveCustoms(); drawCustoms(); renderRouteList();
+  const cur = editingId || customRoutes[customRoutes.length-1].id;
+  exitBuildMode();
+  selectCustom(cur);
+}
+
+function cancelBuild(){
+  buildStops = []; editingId = null;
+  clearBuildMarks();
+  customPanel.style.display = "none";
+}
+
+function exitBuildMode(){
+  building = false;
+  customToggle.classList.remove("building");
+  hint.textContent = "点路线 / 城市看详情";
+  cancelBuild();
+}
+
+// 画已保存的自定义路线
+function drawCustoms(){
+  gCustom.querySelectorAll(".saved-route").forEach(e => e.remove());
+  for (const cr of customRoutes) {
+    const pts = cr.stops.map(k => px(CITIES[k].x) + "," + py(CITIES[k].y)).join(" ");
+    const pl = el("polyline", { class:"route custom saved-route", id:"rt-" + cr.id, points:pts, stroke:"#ffffff" });
+    pl.addEventListener("click", () => { if (!building) selectCustom(cr.id); });
+    gCustom.appendChild(pl);
+  }
+}
+drawCustoms();
+
+function selectCustom(id){
+  const cr = customRoutes.find(r => r.id === id);
+  if (!cr) return;
+  document.querySelectorAll(".route").forEach(p => {
+    p.classList.toggle("active", p.id === "rt-" + id);
+    p.classList.toggle("dim", p.id !== "rt-" + id);
+  });
+  document.querySelectorAll(".rli").forEach(li => li.classList.toggle("active", li.dataset.id === id));
+  cityInfo.style.display = "none";
+  const km = routeKm(cr.stops), dg = routeDanger(cr.stops);
+  const stops = cr.stops.map(k => CITIES[k].n).join(" → ");
+  detail.innerHTML = `
+    <h3 style="color:#fff">✏️ ${cr.name}</h3>
+    <div class="en">自定义路线 · ${cr.stops.length} 站</div>
+    <div class="row"><span class="k">里程</span><span>约 ${km.toLocaleString()} km（实测系数估算）</span></div>
+    <div class="row"><span class="k">危险</span>${dots(dg)}</div>
+    <div class="row"><span class="k">走向</span><span class="stops">${stops}</span></div>
+    <div class="cbtns">
+      <button class="cbtn ok" id="cdEdit">✏️ 编辑</button>
+      <button class="cbtn" id="cdExport">📋 导出文本</button>
+      <button class="cbtn warn" id="cdDel">🗑 删除</button>
+    </div>
+    <div class="gm-note">里程按直线距离 × 1.25 公路系数估算；危险取途经城市峰值。编辑模式会加载到连线器，可增删城市。</div>`;
+  document.getElementById("cdEdit").addEventListener("click", () => {
+    buildStops = cr.stops.slice(); editingId = cr.id;
+    if (!building) customToggle.click(); else renderBuilder();
+  });
+  document.getElementById("cdExport").addEventListener("click", () => {
+    const txt = `【${cr.name}】NUSA 2077 自定义公路线\n走向：${stops}\n总里程：约 ${km.toLocaleString()} km · 危险峰值 ${dg}/5\n` +
+      cr.stops.map((k,i)=>`  ${i+1}. ${CITIES[k].n}（${CITIES[k].en}）— ${FACTION[CITIES[k].f].n} · 危险 ${CITIES[k].d}/5${CITIES[k].note ? "\n     " + CITIES[k].note : ""}`).join("\n");
+    navigator.clipboard?.writeText(txt).catch(()=>{});
+    detail.insertAdjacentHTML("beforeend", `<textarea class="cexport" readonly>${txt}</textarea>`);
+  });
+  document.getElementById("cdDel").addEventListener("click", () => {
+    if (!confirm(`删掉「${cr.name}」？`)) return;
+    customRoutes = customRoutes.filter(r => r.id !== id);
+    saveCustoms(); drawCustoms(); renderRouteList();
+    document.querySelectorAll(".route").forEach(p => p.classList.remove("active","dim"));
+    detail.innerHTML = `<h3>选一条路线</h3><p class="en">点击地图上的彩色路线，或上方列表。</p>`;
+  });
+}
+
+// 图例
+document.getElementById("legend").innerHTML =
+  "势力色标：<br>" + Object.values(FACTION).map(f =>
+    `<i style="background:${f.c}"></i>${f.n}`).join("　");
+
+// 区域卡片
+const rc = document.getElementById("regionCards");
+for (const r of REGIONS) {
+  const d = document.createElement("div");
+  d.className = "rcard";
+  d.innerHTML = `<h4 style="color:${r.c}">${r.n} <span class="en">${r.en}</span></h4><p>${r.desc}</p>`;
+  rc.appendChild(d);
+}
+
+// 路线总表
+const tb = document.querySelector("#routeTable tbody");
+for (const rt of ROUTES) {
+  const tr = document.createElement("tr");
+  tr.innerHTML = `<td style="color:${rt.color}"><b>${rt.n}</b><br><span style="color:var(--muted);font-size:11px">${rt.en}</span></td>
+    <td>${rt.stops.map(k=>CITIES[k].n).join(" → ")}</td>
+    <td>${rt.km}</td>
+    <td class="dots">${"▮".repeat(rt.d)}${"▯".repeat(5-rt.d)}</td>
+    <td>${rt.one}</td>`;
+  tr.style.cursor = "pointer";
+  tr.addEventListener("click", () => { selectRoute(rt.id); window.scrollTo({top:0, behavior:"smooth"}); });
+  tb.appendChild(tr);
+}
+
+selectRoute("rustbelt");
+</script>
+</body>
+</html>
