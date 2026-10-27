@@ -1,0 +1,18 @@
+{
+  "name": "转场演出 · CPR",
+  "version": "1.0.0",
+  "manifest_version": 1,
+  "description": "全员同步转场演出：自定义标题/副标题/字体/颜色/图标，25 种文字动画，9 种场景背景（篝火/日月轮替/电流/雨夜/星空等），10 种合成音效（电流/爆炸/叹息/号角等）。灵感来自 FullPeople obr-suite。",
+  "author": "小汤圆 × 红豆包",
+  "background_url": "https://3183085363-svg.github.io/cpr-sheet/transition/background.html",
+  "permissions": [
+    { "name": "autoplay", "reason": "播放转场音效（电流、爆炸、叹息等合成音）" }
+  ],
+  "action": {
+    "title": "转场演出",
+    "icon": "https://3183085363-svg.github.io/cpr-sheet/transition/icon.png",
+    "popover": "https://3183085363-svg.github.io/cpr-sheet/transition/index.html",
+    "width": 400,
+    "height": 640
+  }
+}

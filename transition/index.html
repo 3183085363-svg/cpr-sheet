@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>转场控制台</title>
+<style>
+:root{--yellow:#FCEE0A;--cyan:#05d9e8;--red:#ff2a6d;--bg:#0a0a10;--panel:#131320;--line:#2a2a3a;--text:#e8e8f0;--muted:#8a8a9a}
+*{box-sizing:border-box;margin:0}
+body{background:var(--bg);color:var(--text);font-family:"Microsoft YaHei",sans-serif;font-size:13px;overflow:hidden}
+main{padding:12px;display:flex;flex-direction:column;gap:10px;height:100vh;overflow-y:auto}
+.head{display:flex;justify-content:space-between;align-items:center}
+.head h1{font-size:15px;color:var(--yellow);letter-spacing:2px}
+.close{background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer}
+.close:hover{color:var(--red)}
+label{font-size:11px;color:var(--muted);display:block;margin-bottom:3px}
+input[type=text],textarea,select{width:100%;background:#0d0d16;border:1px solid var(--line);color:var(--text);border-radius:4px;padding:6px 8px;font-size:13px;font-family:inherit}
+input[type=text]:focus,textarea:focus,select:focus{outline:none;border-color:var(--yellow)}
+textarea{resize:none;height:44px}
+.row{display:flex;gap:8px}
+.row>div{flex:1}
+.chips{display:flex;flex-wrap:wrap;gap:4px}
+.chip{background:#0d0d16;border:1px solid var(--line);color:var(--muted);border-radius:3px;padding:3px 8px;font-size:11px;cursor:pointer;user-select:none}
+.chip:hover{border-color:var(--cyan);color:var(--cyan)}
+.chip.on{border-color:var(--yellow);color:var(--yellow);background:rgba(252,238,10,.08)}
+input[type=color]{width:100%;height:28px;border:1px solid var(--line);background:#0d0d16;border-radius:4px;padding:2px;cursor:pointer}
+input[type=range]{width:100%}
+.swatches{display:flex;gap:4px;margin-top:4px}
+.sw{width:20px;height:20px;border-radius:3px;cursor:pointer;border:1px solid var(--line)}
+.sw:hover{transform:scale(1.15)}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.animbox{max-height:110px;overflow-y:auto;display:flex;flex-wrap:wrap;gap:4px;padding:2px}
+.animbox::-webkit-scrollbar{width:6px}.animbox::-webkit-scrollbar-thumb{background:var(--line);border-radius:3px}
+.actions{display:flex;gap:8px}
+.btn{flex:1;padding:9px;border-radius:4px;border:1px solid var(--line);background:var(--panel);color:var(--text);font-size:13px;font-weight:bold;cursor:pointer;font-family:inherit}
+.btn:hover{border-color:var(--cyan)}
+.btn.primary{background:rgba(252,238,10,.12);border-color:var(--yellow);color:var(--yellow)}
+.btn.primary:hover{background:rgba(252,238,10,.25)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.status{font-size:11px;color:var(--muted);min-height:15px;text-align:center}
+.status.ok{color:var(--cyan)}.status.err{color:var(--red)}
+.hint{font-size:10px;color:#55556a;line-height:1.5}
+.dur-row{display:flex;align-items:center;gap:8px}
+.dur-val{font-family:monospace;color:var(--yellow);min-width:52px;text-align:right;font-size:12px}
+</style>
+  <script type="module" crossorigin src="./assets/main-ChCKAjv5.js"></script>
+  <link rel="modulepreload" crossorigin href="./assets/protocol-BMfyqXpi.js">
+  <link rel="modulepreload" crossorigin href="./assets/sfx-DjtRvjh0.js">
+</head>
+<body>
+<main id="app">
+  <div class="head"><h1>🎬 转场演出</h1><button class="close" id="close">×</button></div>
+
+  <div><label>主标题（必填，120 字内）</label><input type="text" id="text" maxlength="120" placeholder="例如：翌日清晨…"></div>
+  <div><label>副标题（可选）</label><textarea id="sub" maxlength="200" placeholder="一行小字，压在主标题下面"></textarea></div>
+
+  <div class="row">
+    <div><label>图标</label><input type="text" id="icon" maxlength="8" value="✦"></div>
+    <div><label>字号 <span id="sizeVal" style="color:var(--yellow)">72</span>px</label><input type="range" id="size" min="32" max="140" value="72"></div>
+  </div>
+  <div class="chips" id="iconChips"></div>
+
+  <div><label>字体</label><select id="font"></select></div>
+
+  <div><label>颜色</label><input type="color" id="color" value="#FCEE0A">
+    <div class="swatches" id="swatches"></div>
+  </div>
+
+  <div><label>文字动画（25 选 1）</label><div class="animbox chips" id="animChips"></div></div>
+
+  <div class="row">
+    <div><label>场景背景</label><select id="bg"></select></div>
+    <div><label>音效</label><select id="sfx"></select></div>
+  </div>
+
+  <div class="row">
+    <div><label>展示给</label><select id="audience"><option value="all">所有人</option></select></div>
+    <div><label>时长</label>
+      <div class="dur-row"><input type="range" id="duration" min="2000" max="20000" step="500" value="5800"><span class="dur-val" id="durVal">5.8s</span></div>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="btn" id="preview">👁 自己预览</button>
+    <button class="btn primary" id="play">▶ 播放给所有人</button>
+  </div>
+  <div class="status" id="status"></div>
+  <div class="hint">纯演出，不动任何角色数据。玩家也需要装这个扩展才能看到（枭熊限制，弗人插件同理）。ESC 可提前关闭。</div>
+</main>
+</body>
+</html>
