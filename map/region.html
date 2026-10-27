@@ -26,6 +26,18 @@
   .btn:hover{background:rgba(252,238,10,.12)}
   .btn.c{border-color:var(--cyan); color:var(--cyan)}
   .btn.c:hover{background:rgba(5,217,232,.12)}
+  .btn.adding{background:rgba(252,238,10,.15); box-shadow:0 0 10px rgba(252,238,10,.3)}
+  .btn.warn{border-color:var(--red); color:var(--red)}
+  .btn.warn:hover{background:rgba(255,42,109,.12)}
+  .type-palette{display:none; gap:5px; flex-wrap:wrap; align-items:center}
+  .type-palette.on{display:flex}
+  .type-palette .plabel{font-size:11px; color:var(--muted)}
+  .tpick{font-size:11.5px; padding:4px 8px; cursor:pointer; border:1px solid var(--line); background:var(--panel); color:var(--muted); border-radius:2px}
+  .tpick:hover{border-color:var(--yellow)}
+  .tpick.on{color:var(--yellow); border-color:var(--yellow); background:#1a2033}
+  .mapbox.addmode svg{cursor:crosshair}
+  .node{cursor:grab}
+  .node.dragging{cursor:grabbing}
   .layout{display:grid; grid-template-columns:1fr 320px; gap:0; align-items:start; padding:0 20px 20px}
   @media (max-width:980px){ .layout{grid-template-columns:1fr} }
   .mapbox{border:1px solid var(--line); background:#05070f; overflow:hidden}
@@ -59,6 +71,9 @@
   <select id="routeSel"></select>
   <span id="legChips" style="display:flex;gap:6px;flex-wrap:wrap"></span>
   <button class="btn c" id="reroll">🎲 重摇这张图</button>
+  <button class="btn" id="addNodeBtn">➕ 添加节点</button>
+  <span class="type-palette" id="typePalette"></span>
+  <button class="btn warn" id="resetCustom">↺ 重置自定义</button>
   <button class="btn" id="exportPng">💾 导出 PNG（枭熊场景用）</button>
 </div>
 
@@ -252,12 +267,40 @@ function genLeg(){
   const g = el("g", { class:"gen" });
   svg.appendChild(g);
 
+  // ---- 恶土 GPS 风背景：暖黑底 + 经纬网格 + 等高线 + 十字标 ----
+  g.appendChild(el("rect", { x:0, y:0, width:W, height:H, fill:"#0d0a06" }));
+  for (let x = 80; x < W; x += 80)
+    g.appendChild(el("line", { x1:x, y1:0, x2:x, y2:H, stroke:"#1c1712", "stroke-width":1 }));
+  for (let y = 80; y < H; y += 80)
+    g.appendChild(el("line", { x1:0, y1:y, x2:W, y2:y, stroke:"#1c1712", "stroke-width":1 }));
+  for (let x = 160; x < W; x += 160)
+    for (let y = 160; y < H; y += 160) {
+      if (rng() > 0.55) continue;
+      g.appendChild(el("line", { x1:x-6, y1:y, x2:x+6, y2:y, stroke:"#2a2115", "stroke-width":1.5 }));
+      g.appendChild(el("line", { x1:x, y1:y-6, x2:x, y2:y+6, stroke:"#2a2115", "stroke-width":1.5 }));
+    }
+  // 等高线（恶土起伏，种子驱动）
+  for (let i = 0; i < 7; i++){
+    const ccx = 150 + rng()*1300, ccy = 120 + rng()*760, base = 50 + rng()*120;
+    const loops = 1 + Math.floor(rng()*3);
+    for (let l = 0; l < loops; l++){
+      const r0 = base + l * (34 + rng()*22);
+      const cpts = [];
+      for (let k = 0; k <= 14; k++){
+        const an = k/14 * Math.PI * 2;
+        const wob = 1 + (rng()-0.5)*0.36;
+        cpts.push([ccx + Math.cos(an)*r0*wob*1.5, ccy + Math.sin(an)*r0*wob*0.78]);
+      }
+      g.appendChild(el("path", { d: smoothPath(cpts) + " Z", fill:"none", stroke:"#241c11", "stroke-width":1.3, opacity:.8 }));
+    }
+  }
+
   // ---- 背景地形块 ----
   const terrPool = ["枯 死 的 田","荒 原","废 矿 带","盐 滩","红 土 高 原","死 寂 郊 野","辐 射 尘 区"];
   for (let i = 0; i < 3; i++){
     const tx = 200 + rng() * 1100, ty = 160 + rng() * 680;
-    g.appendChild(el("ellipse", { cx:tx, cy:ty, rx:160+rng()*220, ry:90+rng()*130, fill:"#0d1526", opacity:.55 }));
-    const t = el("text", { class:"terr", x:tx, y:ty, "text-anchor":"middle" });
+    g.appendChild(el("ellipse", { cx:tx, cy:ty, rx:160+rng()*220, ry:90+rng()*130, fill:"#171208", opacity:.6 }));
+    const t = el("text", { class:"terr", x:tx, y:ty, "text-anchor":"middle", fill:"#4a3a24" });
     t.textContent = terrPool[Math.floor(rng()*terrPool.length)];
     g.appendChild(t);
   }
@@ -357,21 +400,55 @@ function genLeg(){
     g.appendChild(s);
   }
 
-  // ---- 节点绘制 ----
-  for (const nd of nodes){
+  // ---- 应用自定义覆盖层（拖动/改名/删除/添加，按 路线|路段|种子 存档） ----
+  nodes.forEach((nd, i) => { nd._idx = i; });  // 固化生成顺序索引（覆盖层的 key）
+  const ov = loadOvr();
+  // 先按原始索引应用 moved/renamed/deleted，再过滤、再追加自定义节点
+  for (const k in ov.moved) { const i = +k; if (nodes[i]) { nodes[i].x = ov.moved[k][0]; nodes[i].y = ov.moved[k][1]; } }
+  for (const k in ov.renamed) { const i = +k; if (nodes[i]) nodes[i].name = ov.renamed[k]; }
+  for (const i of ov.deleted) if (nodes[i]) nodes[i]._del = true;
+  nodes = nodes.filter(n => !n._del);
+  for (const a of ov.added) nodes.push({ ...a });
+
+  // ---- 节点绘制（可拖拽摆位） ----
+  nodes.forEach((nd) => {
     const t = NODE_TYPES[nd.type];
-    const gg = el("g", { class:"node" });
-    gg.appendChild(el("circle", { cx:nd.x, cy:nd.y, r:16, fill:"rgba(0,0,0,.6)" }));
-    gg.appendChild(el("circle", { cx:nd.x, cy:nd.y, r:11, fill:"#151f36", stroke: nd.d>=4 ? "#ff2a6d" : "#05d9e8", "stroke-width":2 }));
-    const ic = el("text", { x:nd.x, y:nd.y+6, "text-anchor":"middle", style:"font-size:15px" });
+    const gg = el("g", { class:"node", transform:`translate(${nd.x},${nd.y})` });
+    gg.appendChild(el("circle", { cx:0, cy:0, r:16, fill:"rgba(0,0,0,.6)" }));
+    gg.appendChild(el("circle", { cx:0, cy:0, r:11, fill: nd.custom ? "#241a08" : "#151f36", stroke: nd.custom ? "#fcee0a" : (nd.d>=4 ? "#ff2a6d" : "#05d9e8"), "stroke-width":2, "stroke-dasharray": nd.custom ? "3 2" : "none" }));
+    const ic = el("text", { x:0, y:6, "text-anchor":"middle", style:"font-size:15px" });
     ic.textContent = t.ic;
     gg.appendChild(ic);
-    const lb = el("text", { class:"nlbl", x:nd.x, y:nd.y+34, "text-anchor":"middle" });
+    const lb = el("text", { class:"nlbl", x:0, y:34, "text-anchor":"middle" });
     lb.textContent = nd.name;
     gg.appendChild(lb);
-    gg.addEventListener("click", () => showNode(nd));
+    // 拖拽：pointer 事件 + 点击/拖动区分
+    let moved = false;
+    gg.addEventListener("pointerdown", (ev) => {
+      ev.preventDefault(); moved = false;
+      gg.classList.add("dragging");
+      gg.setPointerCapture(ev.pointerId);
+      const pt = svgPoint(ev);
+      const dx = pt[0] - nd.x, dy = pt[1] - nd.y;
+      const mv = (e2) => {
+        const q = svgPoint(e2);
+        const nx = Math.min(W-40, Math.max(40, q[0]-dx)), ny = Math.min(H-50, Math.max(50, q[1]-dy));
+        if (Math.abs(nx-nd.x) + Math.abs(ny-nd.y) > 3) moved = true;
+        nd.x = nx; nd.y = ny;
+        gg.setAttribute("transform", `translate(${nx},${ny})`);
+      };
+      const up = () => {
+        gg.classList.remove("dragging");
+        gg.removeEventListener("pointermove", mv);
+        gg.removeEventListener("pointerup", up);
+        if (moved) saveMove(nd);
+      };
+      gg.addEventListener("pointermove", mv);
+      gg.addEventListener("pointerup", up);
+    });
+    gg.addEventListener("click", () => { if (!moved) showNode(nd); });
     g.appendChild(gg);
-  }
+  });
 
   // ---- 标题 / 图例 / 比例注记 ----
   const title = el("text", { class:"title-t", x:40, y:56 });
@@ -405,12 +482,40 @@ function dots(d){ let s=""; for (let i=1;i<=5;i++) s += `<span class="${i<=d?'on
 
 function showNode(nd){
   const t = NODE_TYPES[nd.type];
-  const roadName = { hw:"高速公路", us:"国道", dirt:"荒野公路" }[nd.road];
+  const roadName = { hw:"高速公路", us:"国道", dirt:"荒野公路", custom:"自定义位置" }[nd.road];
   ndetail.innerHTML = `
-    <h3>${t.ic} ${nd.name}</h3>
+    <h3>${t.ic} ${nd.name}${nd.custom ? ' <span style="font-size:10px;color:var(--yellow)">自定义</span>' : ""}</h3>
     <div class="row"><span class="k">类型</span><span>${t.tp} · 在${roadName}旁</span></div>
     <div class="row"><span class="k">危险</span>${dots(nd.d)}</div>
-    <div class="gm-note">${nd.note}<br><b>遭遇钩子：</b>${nd.hook}</div>`;
+    <div class="gm-note">${nd.note}<br><b>遭遇钩子：</b>${nd.hook}</div>
+    <div class="cbtns" style="margin-top:10px;display:flex;gap:6px">
+      <button class="btn c" id="ndRename" style="font-size:11px;padding:4px 9px">✏️ 改名</button>
+      <button class="btn warn" id="ndDel" style="font-size:11px;padding:4px 9px">🗑 删除节点</button>
+    </div>`;
+  document.getElementById("ndRename").addEventListener("click", () => {
+    const nn = (prompt("节点改名：", nd.name) || "").trim();
+    if (!nn || nn === nd.name) return;
+    nd.name = nn;
+    const o = loadOvr();
+    if (nd.custom) {
+      const i = o.added.findIndex(a => a.uid === nd.uid);
+      if (i >= 0) o.added[i].name = nn;
+    } else {
+      o.renamed[nd._idx] = nn;
+    }
+    saveOvr(o); genLeg();
+  });
+  document.getElementById("ndDel").addEventListener("click", () => {
+    if (!confirm(`删除节点「${nd.name}」？（重置自定义可恢复）`)) return;
+    const o = loadOvr();
+    if (nd.custom) {
+      o.added = o.added.filter(a => a.uid !== nd.uid);
+    } else {
+      o.deleted.push(nd._idx);
+      delete o.moved[nd._idx]; delete o.renamed[nd._idx];
+    }
+    saveOvr(o); genLeg();
+  });
 }
 
 function renderNodeList(){
@@ -482,6 +587,89 @@ document.getElementById("exportPng").addEventListener("click", () => {
   };
   img.onerror = () => alert("导出失败：浏览器不支持 SVG 序列化");
   img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(s);
+});
+
+// ================= 自定义覆盖层（拖动/改名/删除/添加 持久化） =================
+function ovrKey(){ return curRoute.id + "|" + curLeg + "|" + roll; }
+let ovrStore = {};
+try { ovrStore = JSON.parse(localStorage.getItem("nusa_region_ovr") || "{}"); } catch(e) {}
+function loadOvr(){
+  const o = ovrStore[ovrKey()];
+  return { moved: o?.moved || {}, renamed: o?.renamed || {}, deleted: o?.deleted || [], added: o?.added || [] };
+}
+function saveOvr(o){
+  ovrStore[ovrKey()] = o;
+  localStorage.setItem("nusa_region_ovr", JSON.stringify(ovrStore));
+}
+function saveMove(nd){
+  const o = loadOvr();
+  if (nd.custom) {
+    // 自定义节点：直接在 added 里改坐标
+    const i = o.added.findIndex(a => a.uid === nd.uid);
+    if (i >= 0) { o.added[i].x = nd.x; o.added[i].y = nd.y; }
+  } else {
+    o.moved[nd._idx] = [Math.round(nd.x), Math.round(nd.y)];
+  }
+  saveOvr(o);
+}
+
+// svg 坐标转换（屏幕 → viewBox）
+function svgPoint(ev){
+  const pt = svg.createSVGPoint();
+  pt.x = ev.clientX; pt.y = ev.clientY;
+  const m = svg.getScreenCTM().inverse();
+  const p = pt.matrixTransform(m);
+  return [p.x, p.y];
+}
+
+// ---- 添加节点模式 ----
+const addNodeBtn = document.getElementById("addNodeBtn");
+const typePalette = document.getElementById("typePalette");
+let addMode = false, addType = "gas";
+for (const [k, t] of Object.entries(NODE_TYPES)){
+  const b = document.createElement("span");
+  b.className = "tpick" + (k === addType ? " on" : "");
+  b.textContent = t.ic + " " + t.tp;
+  b.dataset.k = k;
+  b.addEventListener("click", () => {
+    addType = k;
+    typePalette.querySelectorAll(".tpick").forEach(x => x.classList.toggle("on", x.dataset.k === k));
+  });
+  typePalette.appendChild(b);
+}
+addNodeBtn.addEventListener("click", () => {
+  addMode = !addMode;
+  addNodeBtn.classList.toggle("adding", addMode);
+  typePalette.classList.toggle("on", addMode);
+  document.querySelector(".mapbox").classList.toggle("addmode", addMode);
+  addNodeBtn.textContent = addMode ? "✕ 退出添加" : "➕ 添加节点";
+});
+svg.addEventListener("click", (ev) => {
+  if (!addMode) return;
+  const [x, y] = svgPoint(ev);
+  const t = NODE_TYPES[addType];
+  const nd = {
+    uid: "u" + Date.now().toString(36),
+    custom: true,
+    x: Math.round(x), y: Math.round(y),
+    type: addType, road: "custom",
+    name: t.names[Math.floor(Math.random()*t.names.length)].replace("{fac}", FACTION[CITIES[curRoute.stops[curLeg]].f].n).replace("{n}", 3 + Math.floor(Math.random()*60)),
+    note: t.notes[0], hook: t.hook,
+    d: legDanger(curRoute.stops[curLeg], curRoute.stops[curLeg+1]),
+  };
+  const o = loadOvr();
+  o.added.push({ uid:nd.uid, custom:true, x:nd.x, y:nd.y, type:nd.type, road:"custom", name:nd.name, note:nd.note, hook:nd.hook, d:nd.d });
+  saveOvr(o);
+  genLeg();
+});
+
+// ---- 重置本路段的全部自定义 ----
+document.getElementById("resetCustom").addEventListener("click", () => {
+  if (!ovrStore[ovrKey()]) { alert("这张图还没有自定义内容。"); return; }
+  if (!confirm("重置这张图的所有自定义（拖动/改名/添加/删除）？")) return;
+  delete ovrStore[ovrKey()];
+  localStorage.setItem("nusa_region_ovr", JSON.stringify(ovrStore));
+  genLeg();
 });
 
 // ================= 启动 =================
