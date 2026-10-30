@@ -1,6 +1,6 @@
 {
   "name": "转场演出 · CPR",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "manifest_version": 1,
   "description": "全员同步转场演出：自定义标题/副标题/字体/颜色/图标，25 种文字动画，9 种场景背景（篝火/日月轮替/电流/雨夜/星空等），10 种合成音效（电流/爆炸/叹息/号角等）。灵感来自 FullPeople obr-suite。",
   "author": "小汤圆 × 红豆包",
