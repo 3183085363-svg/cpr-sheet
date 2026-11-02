@@ -31,6 +31,15 @@ button,input{font-family:inherit}button{cursor:pointer}
 .alpha output{width:26px;font-size:9px;font-variant-numeric:tabular-nums}
 #detach{background:var(--panel2);border:1px solid var(--cyn);color:var(--cyn);font-size:10px;padding:3px 7px;border-radius:5px;white-space:nowrap}
 #detach:hover{background:var(--cyn);color:#071013}
+#grip{cursor:grab;color:var(--dim);font-size:13px;padding:2px 4px;border-radius:4px;user-select:none;letter-spacing:-2px}
+#grip:hover{color:var(--yel);background:#ffffff12}
+body.dragging #grip{cursor:grabbing}
+#resetpos{background:transparent;border:none;color:var(--dim);font-size:13px;padding:3px 5px;border-radius:5px}
+#resetpos:hover{color:var(--yel);background:#ffffff12}
+#rs{position:absolute;right:0;bottom:0;width:18px;height:18px;cursor:nwse-resize;z-index:12;background:linear-gradient(135deg,transparent 52%,#5a5a6e 53%,#5a5a6e 60%,transparent 61%,transparent 72%,#5a5a6e 73%,#5a5a6e 80%,transparent 81%)}
+#rs:hover{background:linear-gradient(135deg,transparent 52%,var(--yel) 53%,var(--yel) 60%,transparent 61%,transparent 72%,var(--yel) 73%,var(--yel) 80%,transparent 81%)}
+#sizeTip{position:absolute;right:22px;bottom:20px;font-size:10px;color:var(--cyn);background:#000d;border:1px solid #1d3a40;padding:2px 7px;border-radius:4px;z-index:13;display:none;font-variant-numeric:tabular-nums}
+body.resizing #sizeTip{display:block}
 #close{background:transparent;border:none;color:var(--dim);font-size:15px;padding:3px 5px;border-radius:5px}
 #close:hover{color:var(--red)}
 #stage{position:absolute;top:44px;left:0;right:0;bottom:0;overflow:hidden}
@@ -79,18 +88,20 @@ button,input{font-family:inherit}button{cursor:pointer}
 #eventBanner.show{opacity:1}#eventBanner.round{border-color:var(--cyn);color:var(--cyn)}#eventBanner.fail{border-color:var(--red);color:#ffb3ad}#eventBanner.sys,#eventBanner.info{color:var(--dim);border-color:var(--line)}
 .empty-state{position:absolute;inset:0;display:grid;place-items:center;color:var(--dim);font-size:13px;text-align:center;padding:20px}
 </style>
-  <script type="module" crossorigin src="./assets/display-CGGRSJFA.js"></script>
-  <link rel="modulepreload" crossorigin href="./assets/protocol-xlQ1mVd8.js">
+  <script type="module" crossorigin src="./assets/display-ToQgXCsz.js"></script>
+  <link rel="modulepreload" crossorigin href="./assets/protocol-B2lMadWP.js">
   <link rel="modulepreload" crossorigin href="./assets/vehicle-shapes-DbjJ7Usc.js">
 </head>
 <body>
 <!-- 真实仪表盘素材：Pexels #3752190，已压缩/压暗；许可见 assets/credits.txt -->
 <div id="shell">
   <div id="topbar">
+    <div id="grip" title="按住拖动可移动这个浮窗">⠿</div>
     <div class="ttl">载具追逐</div><div class="pill" id="phasePill">未开始</div>
     <div class="views"><button id="viewRoad" class="on">公路</button><button id="viewHud">仪表</button></div>
     <label class="alpha" title="只调背景透明度，文字与指示物保持清晰">◐<input id="alpha" type="range" min="25" max="100" value="90" /><output id="alphaValue">90%</output></label>
     <button id="detach" title="弹出真正的浏览器小窗，可自由拖动和缩放">↗ 独立窗口</button>
+    <button id="resetpos" title="把浮窗放回默认位置">⌖</button>
     <button id="close" title="关闭">✕</button>
   </div>
   <div id="stage">
@@ -99,6 +110,8 @@ button,input{font-family:inherit}button{cursor:pointer}
     <div class="empty-state" id="emptyState">等待 GM 添加载具…</div>
   </div>
   <div id="eventBanner"></div>
+  <div id="rs" title="拖动可缩放这个浮窗"></div>
+  <div id="sizeTip"></div>
 </div>
 </body>
 </html>
