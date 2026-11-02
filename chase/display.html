@@ -16,66 +16,79 @@ html,body{height:100%}
 body{background:var(--bg);color:var(--txt);font-family:var(--font);overflow:hidden;-webkit-font-smoothing:antialiased}
 button{font-family:inherit;cursor:pointer}
 
-#topbar{position:absolute;top:0;left:0;right:0;height:54px;display:flex;align-items:center;gap:12px;padding:0 18px;background:linear-gradient(180deg,rgba(10,10,14,.96),rgba(10,10,14,.78));border-bottom:1px solid var(--line);z-index:10}
-#topbar .ttl{font-size:15px;font-weight:600;letter-spacing:.5px}
-#topbar .pill{font-size:11px;padding:3px 9px;border-radius:99px;border:1px solid var(--line);color:var(--dim)}
+#topbar{position:absolute;top:0;left:0;right:0;height:46px;display:flex;align-items:center;gap:10px;padding:0 14px;background:linear-gradient(180deg,rgba(10,10,14,.97),rgba(10,10,14,.82));border-bottom:1px solid var(--line);z-index:10}
+#topbar .ttl{font-size:13px;font-weight:600;letter-spacing:.5px}
+#topbar .pill{font-size:10px;padding:2px 8px;border-radius:99px;border:1px solid var(--line);color:var(--dim)}
 #topbar .pill.live{border-color:var(--grn);color:var(--grn)}
 #topbar .pill.over{border-color:var(--red);color:var(--red)}
-.views{margin-left:auto;display:flex;gap:6px}
-.views button{background:var(--panel2);border:1px solid var(--line);color:var(--dim);border-radius:6px;padding:5px 13px;font-size:12px;transition:.15s}
+.views{margin-left:auto;display:flex;gap:5px}
+.views button{background:var(--panel2);border:1px solid var(--line);color:var(--dim);border-radius:5px;padding:4px 11px;font-size:11px;transition:.15s}
 .views button:hover:not(.on){border-color:var(--yel);color:var(--yel)}
 .views button.on{color:#111;background:var(--yel);border-color:var(--yel);font-weight:600}
-#close{background:transparent;border:none;color:var(--dim);font-size:18px;padding:4px 8px;border-radius:6px}
+#close{background:transparent;border:none;color:var(--dim);font-size:16px;padding:3px 7px;border-radius:5px}
 #close:hover{color:var(--red)}
 
-#stage{position:absolute;top:54px;left:0;right:0;bottom:0;overflow:hidden}
+#stage{position:absolute;top:46px;left:0;right:0;bottom:0;overflow:hidden}
 
-#roadView{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:0 4vw;gap:22px}
-.road{position:relative;height:44vh;background:#0b0b10;border:1px solid var(--line);border-radius:14px;overflow:hidden}
-.road::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,rgba(255,255,255,.03) 0 2px,transparent 2px 26px)}
+/* ===== 公路俯视（三车道） ===== */
+#roadView{position:absolute;inset:0;display:flex;flex-direction:column;padding:10px 3vw 8px;gap:10px}
+.road{position:relative;flex:1;min-height:150px;background:#0b0b10;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.road::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,rgba(255,255,255,.03) 0 2px,transparent 2px 30px)}
 .edge{position:absolute;left:0;right:0;height:2px;background:#3a3a46}
-.edge.top{top:24%}
-.edge.bot{bottom:24%}
-.center{position:absolute;left:0;right:0;top:50%;border-top:3px dashed rgba(252,238,10,.26)}
+.edge.top{top:12%}
+.edge.bot{bottom:12%}
+.road .ll{position:absolute;left:0;right:0;border-top:2px dashed rgba(255,255,255,.13)}
+.road .ll.l1{top:33.33%}
+.road .ll.l2{top:66.66%}
 .ticks{position:absolute;left:0;right:0;bottom:0;display:flex}
-.ticks .t{flex:1;text-align:center;font-size:11px;color:var(--dim);border-left:1px solid var(--line);padding:9px 0 11px;background:rgba(0,0,0,.25)}
+.ticks .t{flex:1;text-align:center;font-size:10px;color:var(--dim);border-left:1px solid var(--line);padding:7px 0 9px;background:rgba(0,0,0,.28)}
 .ticks .t:last-child{border-right:1px solid var(--line)}
-.ticks .t b{display:block;font-size:14px;color:var(--txt);font-weight:600}
-.car{position:absolute;transform:translate(-50%,-50%);min-width:72px;padding:5px 9px;border-radius:8px;font-size:12px;font-weight:700;background:var(--c);color:#0a0a0c;border:2px solid rgba(255,255,255,.35);text-align:center;transition:left .5s cubic-bezier(.34,1.4,.64,1),top .5s;z-index:2}
-.car small{display:block;font-weight:400;font-size:10px;opacity:.8;white-space:nowrap}
-.car .hp{height:4px;background:#0004;border-radius:2px;margin-top:3px;overflow:hidden}
+.ticks .t b{display:block;font-size:13px;color:var(--txt);font-weight:600}
+.car{position:absolute;transform:translate(-50%,-50%);min-width:66px;padding:4px 8px;border-radius:7px;font-size:11px;font-weight:700;background:var(--c);color:#0a0a0c;border:2px solid rgba(255,255,255,.35);text-align:center;transition:left .5s cubic-bezier(.34,1.4,.64,1),top .5s;z-index:2}
+.car small{display:block;font-weight:400;font-size:9px;opacity:.8;white-space:nowrap}
+.car .hp{height:3px;background:#0004;border-radius:2px;margin-top:3px;overflow:hidden}
 .car .hp i{display:block;height:100%;background:#0a0a0c;opacity:.5}
-.car.turn{box-shadow:0 0 0 3px var(--yel),0 0 24px rgba(252,238,10,.6);z-index:3}
+.car.turn{box-shadow:0 0 0 2px var(--yel),0 0 18px rgba(252,238,10,.6);z-index:3}
 .car.out{filter:grayscale(1) brightness(.55)}
-.gap{position:absolute;top:50%;transform:translateY(-50%);height:16px;background:rgba(5,217,232,.4);border-radius:8px}
-.readout{display:flex;justify-content:center;align-items:baseline;gap:16px}
-.readout .big{font-size:clamp(24px,4vw,42px);font-weight:700;color:var(--yel)}
-.readout .lbl{font-size:14px;color:var(--dim)}
+.gap{position:absolute;top:10%;bottom:10%;background:rgba(5,217,232,.15);border:1px solid rgba(5,217,232,.25);border-radius:7px;z-index:1}
+.readout{display:flex;justify-content:center;align-items:baseline;gap:14px}
+.readout .big{font-size:clamp(20px,3.4vw,34px);font-weight:700;color:var(--yel)}
+.readout .lbl{font-size:12px;color:var(--dim)}
 
-#hudView{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:26px;padding:24px}
-.hud-dist{font-size:clamp(64px,13vw,160px);font-weight:900;line-height:1;color:var(--yel);letter-spacing:2px;text-align:center}
-.hud-dist small{display:block;font-size:16px;font-weight:400;color:var(--dim);letter-spacing:0;margin-top:8px}
-.hud-cars{display:flex;gap:20px;flex-wrap:wrap;justify-content:center;max-width:920px;width:100%}
-.hcard{min-width:230px;flex:1;background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--c);border-radius:10px;padding:15px 17px}
-.hcard.turn{border-color:var(--yel);box-shadow:0 0 0 1px rgba(252,238,10,.4)}
-.hcard.out{opacity:.45}
-.hcard .n{font-size:16px;font-weight:600}
-.hcard .m{font-size:11px;color:var(--dim);margin:4px 0 8px}
-.hbar{height:8px;background:#000;border-radius:4px;overflow:hidden}
+/* ===== 仪表盘 HUD ===== */
+#hudView{position:absolute;inset:0;display:none;flex-direction:column;padding:12px 16px;gap:10px;background:radial-gradient(ellipse at 50% 0%,#0e0f16,#050507 70%)}
+#hudView::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(255,255,255,.014) 0 1px,transparent 1px 3px);pointer-events:none}
+.dash{position:relative;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px}
+.dash-row{display:flex;align-items:center;gap:18px}
+.gauge-wrap{position:relative;display:flex;flex-direction:column;align-items:center}
+.gauge-wrap .glow{position:absolute;inset:auto;top:18%;left:50%;transform:translateX(-50%);width:60%;height:60%;background:radial-gradient(circle,rgba(252,238,10,.16),transparent 70%);filter:blur(6px);pointer-events:none}
+.hud-dist{font-size:13px;color:var(--dim);letter-spacing:2px;text-align:center;margin-bottom:-4px}
+.hud-dist b{color:var(--yel)}
+.hud-cars{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;max-width:760px;width:100%}
+.hcard{min-width:210px;flex:1;display:flex;align-items:center;gap:12px;background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-left:4px solid var(--c);border-radius:10px;padding:12px 14px;position:relative;overflow:hidden}
+.hcard::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 100% 0%,color-mix(in srgb,var(--c) 14%,transparent),transparent 55%);pointer-events:none}
+.hcard.turn{border-color:var(--yel);box-shadow:0 0 0 1px rgba(252,238,10,.4),0 0 20px rgba(252,238,10,.15)}
+.hcard.out{opacity:.42}
+.hcard .info{flex:1;min-width:0;position:relative;z-index:1}
+.hcard .n{font-size:14px;font-weight:600;display:flex;align-items:center;gap:6px}
+.hcard .n .ln{font-size:9px;padding:1px 6px;border-radius:99px;background:var(--c);color:#0a0a0c;font-weight:700}
+.hcard .m{font-size:10px;color:var(--dim);margin:3px 0 7px}
+.hbar{height:8px;background:#000;border-radius:4px;overflow:hidden;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)}
 .hbar i{display:block;height:100%;background:linear-gradient(90deg,var(--grn),var(--yel));transition:width .3s}
-.hcard .row2{display:flex;justify-content:space-between;font-size:12px;margin-top:8px}
+.hcard .row2{display:flex;justify-content:space-between;font-size:11px;margin-top:6px}
 .hcard .row2 b{color:var(--txt)}
+.hcard .mini{flex:0 0 auto;position:relative;z-index:1}
 
-#eventBanner{position:absolute;left:50%;bottom:6vh;transform:translateX(-50%);max-width:80vw;background:#000d;border:1px solid var(--org);color:#ffd9a0;border-radius:10px;padding:12px 24px;font-size:clamp(16px,2.6vw,26px);font-weight:600;opacity:0;transition:opacity .3s;pointer-events:none;z-index:9;text-align:center}
+#eventBanner{position:absolute;left:50%;top:52px;transform:translateX(-50%);max-width:86%;background:#000d;border:1px solid var(--org);color:#ffd9a0;border-radius:8px;padding:9px 18px;font-size:clamp(13px,2vw,19px);font-weight:600;opacity:0;transition:opacity .3s;pointer-events:none;z-index:9;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #eventBanner.show{opacity:1}
 #eventBanner.round{border-color:var(--cyn);color:var(--cyn)}
 #eventBanner.fail{border-color:var(--red);color:#ffb3ad}
 #eventBanner.sys,#eventBanner.info{color:var(--dim);border-color:var(--line)}
 
-.empty-state{position:absolute;inset:0;display:grid;place-items:center;color:var(--dim);font-size:16px;text-align:center;padding:20px}
+.empty-state{position:absolute;inset:0;display:grid;place-items:center;color:var(--dim);font-size:14px;text-align:center;padding:20px}
 </style>
-  <script type="module" crossorigin src="./assets/display-6-BYigyp.js"></script>
-  <link rel="modulepreload" crossorigin href="./assets/protocol-hjeExECn.js">
+  <script type="module" crossorigin src="./assets/display-CwoAmsOA.js"></script>
+  <link rel="modulepreload" crossorigin href="./assets/protocol-BCDuIoFP.js">
 </head>
 <body>
 <div id="topbar">
