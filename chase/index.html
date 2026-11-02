@@ -130,8 +130,8 @@ h1{font-size:14px;letter-spacing:.5px;line-height:1.15}
 ::-webkit-scrollbar-thumb{background:#2a2a35;border-radius:4px}
 ::-webkit-scrollbar-track{background:transparent}
 </style>
-  <script type="module" crossorigin src="./assets/main-DyYLSPmU.js"></script>
-  <link rel="modulepreload" crossorigin href="./assets/protocol-BW7RBdI-.js">
+  <script type="module" crossorigin src="./assets/main-CuCpigOt.js"></script>
+  <link rel="modulepreload" crossorigin href="./assets/protocol-hjeExECn.js">
 </head>
 <body>
 <div class="wrap">
@@ -188,7 +188,12 @@ h1{font-size:14px;letter-spacing:.5px;line-height:1.15}
   </div>
 
   <div class="card" id="gmCtrl" style="display:none">
-    <div class="card-h"><b>回合控制</b></div>
+    <div class="card-h"><b>回合控制</b><span class="r">全屏浮窗</span></div>
+    <div id="gmScreen" class="row" style="margin-bottom:8px">
+      <button id="btn_screen_open" class="primary">📺 开启追逐屏</button>
+      <button id="btn_screen_close" class="ghost">关闭追逐屏</button>
+    </div>
+    <div class="hint" style="margin-bottom:8px">追逐屏是全屏浮窗，会推给房间里的所有玩家（转场插件同款机制）。</div>
     <div id="ctrlSetup" class="row">
       <button id="btn_start" class="primary">🏁 掷先攻 · 开始</button>
       <button id="btn_clear" class="danger">清空</button>
