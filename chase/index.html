@@ -88,7 +88,7 @@ h1{font-size:14px;letter-spacing:.5px;line-height:1.15}
 .bands span{flex:1;text-align:center;font-size:8.5px;color:#5a5a6a}
 
 /* ===== 车辆卡 ===== */
-.cars{display:flex;flex-direction:column;gap:6px}
+.cars{display:flex;flex-direction:column;gap:6px;max-height:min(46vh,420px);overflow-y:auto;padding-right:2px}
 .crow{
   display:flex;align-items:center;gap:8px;background:var(--panel2);
   border:1px solid var(--line);border-left:3px solid var(--c);border-radius:6px;padding:6px 8px;
@@ -102,6 +102,10 @@ h1{font-size:14px;letter-spacing:.5px;line-height:1.15}
 .bar.low i{background:linear-gradient(90deg,var(--red),var(--org))}
 .tag{font-size:9px;padding:2px 5px;border-radius:4px;background:#0006;color:var(--dim);border:1px solid var(--line)}
 .tag.on{color:var(--yel);border-color:var(--yel)}
+.tag.air{color:#8fd3ff;border-color:#2d5a78;background:#0d2233}
+.airtag{display:inline-block;margin-left:3px;padding:0 3px;border-radius:3px;background:#123a52;color:#8fd3ff;font-style:normal;font-size:8px}
+.track-car.air .vehicle-svg{filter:drop-shadow(0 6px 5px #000a)}
+.track-car.air .vlabel{background:#0b2233e0}
 .crow .ctoken{flex:0 0 25px;height:34px;display:grid;place-items:center}
 .crow .ctoken .vehicle-svg{width:25px;height:34px;filter:drop-shadow(0 2px 2px #000)}
 .cstyle{display:flex;align-items:center;gap:5px;margin-top:5px}
@@ -145,9 +149,9 @@ h1{font-size:14px;letter-spacing:.5px;line-height:1.15}
 ::-webkit-scrollbar-thumb{background:#2a2a35;border-radius:4px}
 ::-webkit-scrollbar-track{background:transparent}
 </style>
-  <script type="module" crossorigin src="./assets/main-DgCivYP4.js"></script>
-  <link rel="modulepreload" crossorigin href="./assets/protocol-B2lMadWP.js">
-  <link rel="modulepreload" crossorigin href="./assets/templates-Bl9B9Bfm.js">
+  <script type="module" crossorigin src="./assets/main-eEqiSppx.js"></script>
+  <link rel="modulepreload" crossorigin href="./assets/protocol-DTp94GXZ.js">
+  <link rel="modulepreload" crossorigin href="./assets/templates-DyVqGaHX.js">
   <link rel="modulepreload" crossorigin href="./assets/vehicle-shapes-DbjJ7Usc.js">
 </head>
 <body>
@@ -244,7 +248,8 @@ h1{font-size:14px;letter-spacing:.5px;line-height:1.15}
       </div>
       <div class="row" style="margin-top:8px">
         <button id="btn_endturn" class="primary">下一个 →</button>
-        <button id="btn_reset" class="danger" style="margin-left:auto">结束追逐</button>
+        <button id="btn_finish" class="ghost" title="由 GM 决定何时结束">🏁 宣告结束</button>
+        <button id="btn_reset" class="danger" style="margin-left:auto">↺ 重置</button>
       </div>
     </div>
   </div>

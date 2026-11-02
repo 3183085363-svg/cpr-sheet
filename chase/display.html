@@ -55,12 +55,16 @@ body.resizing #sizeTip{display:block}
 .ticks .t:last-child{border-right:1px solid var(--line)}.ticks .t b{display:block;font-size:11px;color:var(--txt);font-weight:600}
 .car{position:absolute;transform:translate(-50%,-50%);z-index:2;transition:left .5s cubic-bezier(.34,1.4,.64,1),top .5s;display:flex;flex-direction:column;align-items:center;pointer-events:none}
 .car .vbody{height:52px;display:grid;place-items:center}
-.car .vehicle-svg{width:50px;height:72px;transform:rotate(90deg);filter:drop-shadow(0 3px 4px #000b)}
+.car .vehicle-svg{width:calc(50px * var(--s,1));height:calc(72px * var(--s,1));transform:rotate(90deg);filter:drop-shadow(0 3px 4px #000b)}
 .car .car-tag{min-width:60px;max-width:94px;margin-top:-4px;padding:2px 5px;border-radius:4px;background:rgba(5,6,9,.88);border:1px solid color-mix(in srgb,var(--c) 55%,transparent);text-align:center;color:var(--txt);font-size:9px;line-height:1.15}
 .car .car-tag b{display:block;color:var(--c);font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .car .car-tag small{color:var(--dim);font-size:8px}
 .car .hp{height:2px;background:#ffffff18;border-radius:2px;margin-top:2px;overflow:hidden}.car .hp i{display:block;height:100%;background:var(--c)}
 .car.turn{filter:drop-shadow(0 0 6px rgba(252,238,10,.75));z-index:3}.car.turn .car-tag{box-shadow:0 0 0 1px var(--yel)}
+.car.air .vbody{filter:drop-shadow(0 7px 6px #000c)}
+.car.air .car-tag{border-color:rgba(143,211,255,.5);background:rgba(8,26,38,.9)}
+.car.air .car-tag b{color:#8fd3ff}
+.airtag{display:inline-block;margin:0 3px;padding:0 4px;border-radius:3px;background:#123a52;color:#8fd3ff;font-style:normal;font-size:8px;vertical-align:1px}
 .car.out{filter:grayscale(1) brightness(.55)}
 .gap{position:absolute;top:10%;bottom:10%;background:rgba(5,217,232,.1);border:1px solid rgba(5,217,232,.2);border-radius:7px;z-index:1}
 .readout{display:flex;justify-content:center;align-items:baseline;gap:12px}.readout .big{font-size:clamp(17px,3vw,26px);font-weight:700;color:var(--yel)}.readout .lbl{font-size:11px;color:var(--dim)}
@@ -75,9 +79,16 @@ body.resizing #sizeTip{display:block}
 .hud-number{font-size:clamp(52px,10vw,88px);font-weight:900;line-height:.95;color:var(--yel);font-variant-numeric:tabular-nums}
 .hud-number small{font-size:13px;font-weight:500;letter-spacing:1px;color:#d8d8df;margin-left:5px}
 .hud-range{font-size:12px;color:#d8d8df;margin-top:4px}.hud-sub{font-size:9px;color:#9999a5;margin-top:3px;letter-spacing:1px}
-.hud-cars{display:flex;gap:9px;flex-wrap:wrap;justify-content:flex-end;margin-top:auto;padding-top:8px}
+.hud-cars{display:flex;gap:9px;flex-wrap:wrap;justify-content:flex-end;margin-top:auto;padding-top:8px;max-height:62%;overflow-y:auto;align-content:flex-start;scrollbar-width:thin}
+.hud-cars.many .hcard{min-width:148px;max-width:220px;padding:6px 8px}
+.hud-cars.many .hcard .cs b{font-size:18px}
+.hud-cars.many .hcard .vtoken{flex:0 0 22px;height:32px}
+.hud-cars.many .hcard .vtoken .vehicle-svg{width:22px;height:32px}
+.hud-cars.many .hud-main{width:40%}
 .hcard{min-width:190px;flex:1;max-width:310px;display:flex;align-items:center;gap:9px;background:rgba(12,13,18,.76);backdrop-filter:blur(5px);border:1px solid #ffffff1c;border-left:3px solid var(--c);border-radius:8px;padding:8px 10px;position:relative;overflow:hidden}
 .hcard.turn{border-color:var(--yel);box-shadow:0 0 12px rgba(252,238,10,.16)}.hcard.out{opacity:.42}
+.hcard.air{border-left-color:#8fd3ff;background:rgba(10,22,32,.78)}
+.hcard.air .ln{background:#8fd3ff;color:#06202e}
 .hcard .vtoken{flex:0 0 27px;height:40px}.hcard .vehicle-svg{width:27px;height:40px;filter:drop-shadow(0 2px 3px #000)}
 .hcard .info{flex:1;min-width:0}.hcard .n{font-size:11px;font-weight:600;display:flex;align-items:center;gap:5px}.hcard .n .ln{font-size:8px;padding:1px 4px;border-radius:99px;background:var(--c);color:#0a0a0c;font-weight:700}
 .hcard .m{font-size:9px;color:#aaaab4;margin:2px 0 5px}.hbar{height:5px;background:#0009;border-radius:3px;overflow:hidden}.hbar i{display:block;height:100%;background:linear-gradient(90deg,var(--grn),var(--yel));transition:width .3s}
@@ -88,8 +99,8 @@ body.resizing #sizeTip{display:block}
 #eventBanner.show{opacity:1}#eventBanner.round{border-color:var(--cyn);color:var(--cyn)}#eventBanner.fail{border-color:var(--red);color:#ffb3ad}#eventBanner.sys,#eventBanner.info{color:var(--dim);border-color:var(--line)}
 .empty-state{position:absolute;inset:0;display:grid;place-items:center;color:var(--dim);font-size:13px;text-align:center;padding:20px}
 </style>
-  <script type="module" crossorigin src="./assets/display-ToQgXCsz.js"></script>
-  <link rel="modulepreload" crossorigin href="./assets/protocol-B2lMadWP.js">
+  <script type="module" crossorigin src="./assets/display-BLOUAVIZ.js"></script>
+  <link rel="modulepreload" crossorigin href="./assets/protocol-DTp94GXZ.js">
   <link rel="modulepreload" crossorigin href="./assets/vehicle-shapes-DbjJ7Usc.js">
 </head>
 <body>
