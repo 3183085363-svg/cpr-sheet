@@ -1,14 +1,11 @@
 {
   "name": "载具追逐 · CPR",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "manifest_version": 1,
   "description": "基于 CPR 官方 DLC《Hot Pursuit》的载具追逐插件：8 格追逐轨道、先攻与回合推进、氮气/PIT/撞击/贴近/拉开等机动动作自动判定、SDP 与战斗速度联动、地图车辆徽章实时同步。灵感来自 FVTT 追逐模块。",
   "author": "小汤圆 × 红豆包",
   "background_url": "https://3183085363-svg.github.io/cpr-sheet/chase/background.html",
   "permissions": [
-    { "name": "ATTACHMENT_CREATE", "reason": "在车辆 token 上挂载格位/SDP 徽章" },
-    { "name": "ATTACHMENT_UPDATE", "reason": "更新徽章内容" },
-    { "name": "ATTACHMENT_DELETE", "reason": "结束或移除载具时清理徽章" },
     { "name": "autoplay", "reason": "播放引擎轰鸣/撞击/警笛等合成音效" }
   ],
   "action": {
