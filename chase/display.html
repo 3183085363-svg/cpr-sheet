@@ -6,110 +6,96 @@
 <title>追逐屏 · CPR</title>
 <style>
 :root{
-  --bg:#050507; --panel:#121218; --panel2:#1a1a22; --line:#2a2a35;
+  --panel:#121218; --panel2:#1a1a22; --line:#2a2a35;
   --txt:#e9e9f0; --dim:#8b8b9c; --yel:#FCEE0A; --cyn:#05d9e8;
   --red:#ff3b30; --grn:#32d74b; --org:#ff9f0a;
   --font:"Segoe UI","Microsoft YaHei",system-ui,sans-serif;
+  --shell-alpha:.9;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%}
-body{background:var(--bg);color:var(--txt);font-family:var(--font);overflow:hidden;-webkit-font-smoothing:antialiased}
-button{font-family:inherit;cursor:pointer}
-
-#topbar{position:absolute;top:0;left:0;right:0;height:46px;display:flex;align-items:center;gap:10px;padding:0 14px;background:linear-gradient(180deg,rgba(10,10,14,.97),rgba(10,10,14,.82));border-bottom:1px solid var(--line);z-index:10}
-#topbar .ttl{font-size:13px;font-weight:600;letter-spacing:.5px}
-#topbar .pill{font-size:10px;padding:2px 8px;border-radius:99px;border:1px solid var(--line);color:var(--dim)}
+html,body{height:100%;background:transparent}
+body{color:var(--txt);font-family:var(--font);overflow:hidden;-webkit-font-smoothing:antialiased}
+button,input{font-family:inherit}button{cursor:pointer}
+#shell{position:absolute;inset:0;background:rgba(5,5,7,var(--shell-alpha));border:1px solid rgba(80,80,95,.5);border-radius:10px;overflow:hidden;box-shadow:0 12px 35px #0007}
+#topbar{position:absolute;top:0;left:0;right:0;height:44px;display:flex;align-items:center;gap:9px;padding:0 12px;background:linear-gradient(180deg,rgba(14,14,19,.96),rgba(14,14,19,.78));border-bottom:1px solid var(--line);z-index:10}
+#topbar .ttl{font-size:12px;font-weight:600;letter-spacing:.5px;white-space:nowrap}
+#topbar .pill{font-size:10px;padding:2px 7px;border-radius:99px;border:1px solid var(--line);color:var(--dim);white-space:nowrap}
 #topbar .pill.live{border-color:var(--grn);color:var(--grn)}
 #topbar .pill.over{border-color:var(--red);color:var(--red)}
-.views{margin-left:auto;display:flex;gap:5px}
-.views button{background:var(--panel2);border:1px solid var(--line);color:var(--dim);border-radius:5px;padding:4px 11px;font-size:11px;transition:.15s}
+.views{margin-left:auto;display:flex;gap:4px}
+.views button{background:var(--panel2);border:1px solid var(--line);color:var(--dim);border-radius:5px;padding:3px 9px;font-size:10px;transition:.15s}
 .views button:hover:not(.on){border-color:var(--yel);color:var(--yel)}
 .views button.on{color:#111;background:var(--yel);border-color:var(--yel);font-weight:600}
-#close{background:transparent;border:none;color:var(--dim);font-size:16px;padding:3px 7px;border-radius:5px}
+.alpha{display:flex;align-items:center;gap:4px;color:var(--dim);font-size:10px;white-space:nowrap}
+.alpha input{width:58px;height:3px;accent-color:var(--yel);cursor:pointer}
+.alpha output{width:26px;font-size:9px;font-variant-numeric:tabular-nums}
+#close{background:transparent;border:none;color:var(--dim);font-size:15px;padding:3px 5px;border-radius:5px}
 #close:hover{color:var(--red)}
+#stage{position:absolute;top:44px;left:0;right:0;bottom:0;overflow:hidden}
 
-#stage{position:absolute;top:46px;left:0;right:0;bottom:0;overflow:hidden}
-
-/* ===== 公路俯视（三车道） ===== */
-#roadView{position:absolute;inset:0;display:flex;flex-direction:column;padding:10px 3vw 8px;gap:10px}
-.road{position:relative;flex:1;min-height:150px;background:#0b0b10;border:1px solid var(--line);border-radius:12px;overflow:hidden}
-.road::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,rgba(255,255,255,.03) 0 2px,transparent 2px 30px)}
-.edge{position:absolute;left:0;right:0;height:2px;background:#3a3a46}
-.edge.top{top:12%}
-.edge.bot{bottom:12%}
-.road .ll{position:absolute;left:0;right:0;border-top:2px dashed rgba(255,255,255,.13)}
-.road .ll.l1{top:33.33%}
-.road .ll.l2{top:66.66%}
+/* ===== 公路俯视：轻量三车道 ===== */
+#roadView{position:absolute;inset:0;display:flex;flex-direction:column;padding:8px 2.5vw 7px;gap:6px}
+.road{position:relative;flex:1;min-height:140px;background:rgba(11,11,16,.8);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.road::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,rgba(255,255,255,.025) 0 2px,transparent 2px 30px)}
+.edge{position:absolute;left:0;right:0;height:2px;background:#3a3a46}.edge.top{top:12%}.edge.bot{bottom:12%}
+.road .ll{position:absolute;left:0;right:0;border-top:2px dashed rgba(255,255,255,.12)}.road .ll.l1{top:33.33%}.road .ll.l2{top:66.66%}
 .ticks{position:absolute;left:0;right:0;bottom:0;display:flex}
-.ticks .t{flex:1;text-align:center;font-size:10px;color:var(--dim);border-left:1px solid var(--line);padding:7px 0 9px;background:rgba(0,0,0,.28)}
-.ticks .t:last-child{border-right:1px solid var(--line)}
-.ticks .t b{display:block;font-size:13px;color:var(--txt);font-weight:600}
-.car{position:absolute;transform:translate(-50%,-50%);min-width:66px;padding:4px 8px;border-radius:7px;font-size:11px;font-weight:700;background:var(--c);color:#0a0a0c;border:2px solid rgba(255,255,255,.35);text-align:center;transition:left .5s cubic-bezier(.34,1.4,.64,1),top .5s;z-index:2}
-.car small{display:block;font-weight:400;font-size:9px;opacity:.8;white-space:nowrap}
-.car .hp{height:3px;background:#0004;border-radius:2px;margin-top:3px;overflow:hidden}
-.car .hp i{display:block;height:100%;background:#0a0a0c;opacity:.5}
-.car.turn{box-shadow:0 0 0 2px var(--yel),0 0 18px rgba(252,238,10,.6);z-index:3}
+.ticks .t{flex:1;text-align:center;font-size:9px;color:var(--dim);border-left:1px solid var(--line);padding:5px 0 6px;background:rgba(0,0,0,.28)}
+.ticks .t:last-child{border-right:1px solid var(--line)}.ticks .t b{display:block;font-size:11px;color:var(--txt);font-weight:600}
+.car{position:absolute;transform:translate(-50%,-50%);z-index:2;transition:left .5s cubic-bezier(.34,1.4,.64,1),top .5s;display:flex;flex-direction:column;align-items:center;pointer-events:none}
+.car .vbody{height:52px;display:grid;place-items:center}
+.car .vehicle-svg{width:50px;height:72px;transform:rotate(90deg);filter:drop-shadow(0 3px 4px #000b)}
+.car .car-tag{min-width:60px;max-width:94px;margin-top:-4px;padding:2px 5px;border-radius:4px;background:rgba(5,6,9,.88);border:1px solid color-mix(in srgb,var(--c) 55%,transparent);text-align:center;color:var(--txt);font-size:9px;line-height:1.15}
+.car .car-tag b{display:block;color:var(--c);font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.car .car-tag small{color:var(--dim);font-size:8px}
+.car .hp{height:2px;background:#ffffff18;border-radius:2px;margin-top:2px;overflow:hidden}.car .hp i{display:block;height:100%;background:var(--c)}
+.car.turn{filter:drop-shadow(0 0 6px rgba(252,238,10,.75));z-index:3}.car.turn .car-tag{box-shadow:0 0 0 1px var(--yel)}
 .car.out{filter:grayscale(1) brightness(.55)}
-.gap{position:absolute;top:10%;bottom:10%;background:rgba(5,217,232,.15);border:1px solid rgba(5,217,232,.25);border-radius:7px;z-index:1}
-.readout{display:flex;justify-content:center;align-items:baseline;gap:14px}
-.readout .big{font-size:clamp(20px,3.4vw,34px);font-weight:700;color:var(--yel)}
-.readout .lbl{font-size:12px;color:var(--dim)}
+.gap{position:absolute;top:10%;bottom:10%;background:rgba(5,217,232,.1);border:1px solid rgba(5,217,232,.2);border-radius:7px;z-index:1}
+.readout{display:flex;justify-content:center;align-items:baseline;gap:12px}.readout .big{font-size:clamp(17px,3vw,26px);font-weight:700;color:var(--yel)}.readout .lbl{font-size:11px;color:var(--dim)}
 
-/* ===== 仪表盘 HUD ===== */
-#hudView{position:absolute;inset:0;display:none;flex-direction:column;padding:12px 16px;gap:10px;background:radial-gradient(ellipse at 50% 0%,#0e0f16,#050507 70%)}
-#hudView::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(255,255,255,.014) 0 1px,transparent 1px 3px);pointer-events:none}
-.dash{position:relative;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px}
-.dash-row{display:flex;align-items:center;gap:18px}
-.gauge-wrap{position:relative;display:flex;flex-direction:column;align-items:center}
-.gauge-wrap .glow{position:absolute;inset:auto;top:18%;left:50%;transform:translateX(-50%);width:60%;height:60%;background:radial-gradient(circle,rgba(252,238,10,.16),transparent 70%);filter:blur(6px);pointer-events:none}
-.hud-dist{font-size:13px;color:var(--dim);letter-spacing:2px;text-align:center;margin-bottom:-4px}
-.hud-dist b{color:var(--yel)}
-.hud-cars{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;max-width:760px;width:100%}
-.hcard{min-width:210px;flex:1;display:flex;align-items:center;gap:12px;background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-left:4px solid var(--c);border-radius:10px;padding:12px 14px;position:relative;overflow:hidden}
-.hcard::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 100% 0%,color-mix(in srgb,var(--c) 14%,transparent),transparent 55%);pointer-events:none}
-.hcard.turn{border-color:var(--yel);box-shadow:0 0 0 1px rgba(252,238,10,.4),0 0 20px rgba(252,238,10,.15)}
-.hcard.out{opacity:.42}
-.hcard .info{flex:1;min-width:0;position:relative;z-index:1}
-.hcard .n{font-size:14px;font-weight:600;display:flex;align-items:center;gap:6px}
-.hcard .n .ln{font-size:9px;padding:1px 6px;border-radius:99px;background:var(--c);color:#0a0a0c;font-weight:700}
-.hcard .m{font-size:10px;color:var(--dim);margin:3px 0 7px}
-.hbar{height:8px;background:#000;border-radius:4px;overflow:hidden;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)}
-.hbar i{display:block;height:100%;background:linear-gradient(90deg,var(--grn),var(--yel));transition:width .3s}
-.hcard .row2{display:flex;justify-content:space-between;font-size:11px;margin-top:6px}
-.hcard .row2 b{color:var(--txt)}
-.hcard .mini{flex:0 0 auto;position:relative;z-index:1}
+/* ===== 真实仪表盘 HUD：照片做质感，数据保持清晰 ===== */
+#hudView{position:absolute;inset:0;display:none;flex-direction:column;padding:14px;overflow:hidden;background:#08090c}
+#hudView::before{content:"";position:absolute;inset:0;background:url("./assets/dashboard.webp") center 48%/cover no-repeat;opacity:.62;filter:saturate(.8)}
+#hudView::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(3,4,7,.12),rgba(3,4,7,.35) 42%,rgba(3,4,7,.82) 78%),linear-gradient(0deg,rgba(3,4,7,.9),transparent 55%)}
+.dash{position:relative;z-index:1;flex:1;display:flex;flex-direction:column;min-height:0}
+.hud-main{margin-left:auto;width:48%;text-align:right;padding-top:8px;text-shadow:0 2px 12px #000}
+.hud-kicker{font-size:10px;color:#c3c3cc;letter-spacing:2px}.hud-kicker b{color:var(--yel)}
+.hud-number{font-size:clamp(52px,10vw,88px);font-weight:900;line-height:.95;color:var(--yel);font-variant-numeric:tabular-nums}
+.hud-number small{font-size:13px;font-weight:500;letter-spacing:1px;color:#d8d8df;margin-left:5px}
+.hud-range{font-size:12px;color:#d8d8df;margin-top:4px}.hud-sub{font-size:9px;color:#9999a5;margin-top:3px;letter-spacing:1px}
+.hud-cars{display:flex;gap:9px;flex-wrap:wrap;justify-content:flex-end;margin-top:auto;padding-top:8px}
+.hcard{min-width:190px;flex:1;max-width:310px;display:flex;align-items:center;gap:9px;background:rgba(12,13,18,.76);backdrop-filter:blur(5px);border:1px solid #ffffff1c;border-left:3px solid var(--c);border-radius:8px;padding:8px 10px;position:relative;overflow:hidden}
+.hcard.turn{border-color:var(--yel);box-shadow:0 0 12px rgba(252,238,10,.16)}.hcard.out{opacity:.42}
+.hcard .vtoken{flex:0 0 27px;height:40px}.hcard .vehicle-svg{width:27px;height:40px;filter:drop-shadow(0 2px 3px #000)}
+.hcard .info{flex:1;min-width:0}.hcard .n{font-size:11px;font-weight:600;display:flex;align-items:center;gap:5px}.hcard .n .ln{font-size:8px;padding:1px 4px;border-radius:99px;background:var(--c);color:#0a0a0c;font-weight:700}
+.hcard .m{font-size:9px;color:#aaaab4;margin:2px 0 5px}.hbar{height:5px;background:#0009;border-radius:3px;overflow:hidden}.hbar i{display:block;height:100%;background:linear-gradient(90deg,var(--grn),var(--yel));transition:width .3s}
+.hcard .row2{display:flex;justify-content:space-between;font-size:9px;margin-top:4px;color:#aaaab4}.hcard .row2 b{color:var(--txt)}
+.hcard .cs{flex:0 0 auto;text-align:right;color:#aaaab4;font-size:8px}.hcard .cs b{display:block;color:var(--c);font-size:22px;line-height:1}
 
-#eventBanner{position:absolute;left:50%;top:52px;transform:translateX(-50%);max-width:86%;background:#000d;border:1px solid var(--org);color:#ffd9a0;border-radius:8px;padding:9px 18px;font-size:clamp(13px,2vw,19px);font-weight:600;opacity:0;transition:opacity .3s;pointer-events:none;z-index:9;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-#eventBanner.show{opacity:1}
-#eventBanner.round{border-color:var(--cyn);color:var(--cyn)}
-#eventBanner.fail{border-color:var(--red);color:#ffb3ad}
-#eventBanner.sys,#eventBanner.info{color:var(--dim);border-color:var(--line)}
-
-.empty-state{position:absolute;inset:0;display:grid;place-items:center;color:var(--dim);font-size:14px;text-align:center;padding:20px}
+#eventBanner{position:absolute;left:50%;top:50px;transform:translateX(-50%);max-width:86%;background:#000e;border:1px solid var(--org);color:#ffd9a0;border-radius:7px;padding:7px 14px;font-size:clamp(11px,1.8vw,16px);font-weight:600;opacity:0;transition:opacity .3s;pointer-events:none;z-index:9;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#eventBanner.show{opacity:1}#eventBanner.round{border-color:var(--cyn);color:var(--cyn)}#eventBanner.fail{border-color:var(--red);color:#ffb3ad}#eventBanner.sys,#eventBanner.info{color:var(--dim);border-color:var(--line)}
+.empty-state{position:absolute;inset:0;display:grid;place-items:center;color:var(--dim);font-size:13px;text-align:center;padding:20px}
 </style>
-  <script type="module" crossorigin src="./assets/display-CwoAmsOA.js"></script>
-  <link rel="modulepreload" crossorigin href="./assets/protocol-BCDuIoFP.js">
+  <script type="module" crossorigin src="./assets/display-DQrE6gfn.js"></script>
+  <link rel="modulepreload" crossorigin href="./assets/protocol-B7xRCCQP.js">
+  <link rel="modulepreload" crossorigin href="./assets/vehicle-shapes-DbjJ7Usc.js">
 </head>
 <body>
-<div id="topbar">
-  <div class="ttl">载具追逐</div>
-  <div class="pill" id="phasePill">未开始</div>
-  <div class="views">
-    <button id="viewRoad" class="on">公路</button>
-    <button id="viewHud">仪表</button>
+<!-- 真实仪表盘素材：Pexels #3752190，已压缩/压暗；许可见 assets/credits.txt -->
+<div id="shell">
+  <div id="topbar">
+    <div class="ttl">载具追逐</div><div class="pill" id="phasePill">未开始</div>
+    <div class="views"><button id="viewRoad" class="on">公路</button><button id="viewHud">仪表</button></div>
+    <label class="alpha" title="只调背景透明度，文字与指示物保持清晰">◐<input id="alpha" type="range" min="25" max="100" value="90" /><output id="alphaValue">90%</output></label>
+    <button id="close" title="关闭">✕</button>
   </div>
-  <button id="close" title="关闭">✕</button>
-</div>
-
-<div id="stage">
-  <div id="roadView">
-    <div class="road" id="road"></div>
-    <div class="readout" id="readout"></div>
+  <div id="stage">
+    <div id="roadView"><div class="road" id="road"></div><div class="readout" id="readout"></div></div>
+    <div id="hudView"></div>
+    <div class="empty-state" id="emptyState">等待 GM 添加载具…</div>
   </div>
-  <div id="hudView"></div>
-  <div class="empty-state" id="emptyState">等待 GM 添加载具…</div>
+  <div id="eventBanner"></div>
 </div>
-<div id="eventBanner"></div>
-
 </body>
 </html>

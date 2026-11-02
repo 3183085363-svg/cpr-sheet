@@ -1,0 +1,5 @@
+Dashboard background photo
+Source: https://www.pexels.com/photo/speedometer-on-dashboard-of-a-car-in-close-up-view-3752190
+Direct image: https://images.pexels.com/photos/3752190/pexels-photo-3752190.jpeg
+License: Pexels License (free to use; modification allowed)
+Changes: resized to 1200x800, desaturated, darkened, slightly blurred, exported as WebP.

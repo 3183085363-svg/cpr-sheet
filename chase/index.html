@@ -78,6 +78,12 @@ h1{font-size:14px;letter-spacing:.5px;line-height:1.15}
 .car.out{filter:grayscale(1) brightness(.6);text-decoration:line-through}
 .car .hp{height:3px;background:#0004;border-radius:2px;margin-top:3px;overflow:hidden}
 .car .hp i{display:block;height:100%;background:#0a0a0c;opacity:.55}
+.track-car{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:0;z-index:2;transition:left .45s cubic-bezier(.34,1.4,.64,1),top .45s;pointer-events:none}
+.track-car .vehicle-svg{width:25px;height:38px;transform:rotate(90deg);filter:drop-shadow(0 2px 3px #000)}
+.track-car .vlabel{max-width:72px;margin-top:-3px;padding:1px 4px;border-radius:3px;background:#090a0edb;color:var(--c);font-size:8px;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.track-car.turn{filter:drop-shadow(0 0 5px var(--yel));z-index:3}
+.track-car.out{filter:grayscale(1) brightness(.55)}
+.track-car.turn .vlabel{box-shadow:0 0 0 1px var(--yel)}
 .bands{display:flex;margin-top:5px;gap:2px}
 .bands span{flex:1;text-align:center;font-size:8.5px;color:#5a5a6a}
 
@@ -96,6 +102,12 @@ h1{font-size:14px;letter-spacing:.5px;line-height:1.15}
 .bar.low i{background:linear-gradient(90deg,var(--red),var(--org))}
 .tag{font-size:9px;padding:2px 5px;border-radius:4px;background:#0006;color:var(--dim);border:1px solid var(--line)}
 .tag.on{color:var(--yel);border-color:var(--yel)}
+.crow .ctoken{flex:0 0 25px;height:34px;display:grid;place-items:center}
+.crow .ctoken .vehicle-svg{width:25px;height:34px;filter:drop-shadow(0 2px 2px #000)}
+.cstyle{display:flex;align-items:center;gap:5px;margin-top:5px}
+.cstyle select{width:82px;padding:2px 4px;font-size:9px;height:22px}
+.cstyle input[type=color]{width:24px;height:22px;padding:1px;cursor:pointer}
+.cstyle .tpl{font-size:9px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:125px}
 .iconbtn{background:transparent;border:none;color:var(--dim);padding:2px 4px;font-size:13px;line-height:1}
 .iconbtn:hover{color:var(--red)}
 
@@ -130,8 +142,10 @@ h1{font-size:14px;letter-spacing:.5px;line-height:1.15}
 ::-webkit-scrollbar-thumb{background:#2a2a35;border-radius:4px}
 ::-webkit-scrollbar-track{background:transparent}
 </style>
-  <script type="module" crossorigin src="./assets/main-6pP4flrE.js"></script>
-  <link rel="modulepreload" crossorigin href="./assets/protocol-BCDuIoFP.js">
+  <script type="module" crossorigin src="./assets/main-CiUufIu9.js"></script>
+  <link rel="modulepreload" crossorigin href="./assets/protocol-B7xRCCQP.js">
+  <link rel="modulepreload" crossorigin href="./assets/templates-C02Z09pO.js">
+  <link rel="modulepreload" crossorigin href="./assets/vehicle-shapes-DbjJ7Usc.js">
 </head>
 <body>
 <div class="wrap">
@@ -170,6 +184,10 @@ h1{font-size:14px;letter-spacing:.5px;line-height:1.15}
       <div class="field"><label>载具名</label><input id="f_name" placeholder="Quadra Type-66" /></div>
       <div class="field"><label>驾驶员</label><input id="f_driver" placeholder="V" /></div>
     </div>
+    <div class="grid2" style="margin-top:6px">
+      <div class="field"><label>图鉴载具模板</label><select id="f_template"></select></div>
+      <div class="field"><label>指示物造型</label><select id="f_kind"></select></div>
+    </div>
     <div class="grid3" style="margin-top:6px">
       <div class="field"><label>驾驶技能</label><input id="f_skill" type="number" value="6" min="0" max="20" /></div>
       <div class="field"><label>REF</label><input id="f_ref" type="number" value="8" min="0" max="20" /></div>
@@ -194,7 +212,7 @@ h1{font-size:14px;letter-spacing:.5px;line-height:1.15}
       <button id="btn_pick" class="ghost">📌 读取选中 token</button>
       <button id="btn_add" class="primary" style="margin-left:auto">+ 加入追逐</button>
     </div>
-    <div class="hint">在地图上选中车辆 token 后点「读取选中 token」，名字会自动带上，徽章也会挂到车上。</div>
+    <div class="hint">可直接在地图上<strong>右键载具 token → 加入追逐</strong>：优先读取已绑定图鉴，其次按 token 名字匹配。这里读取 token 后，也会把模板与驾驶员数据绑定回 token。</div>
   </div>
 
   <div class="card" id="gmCtrl" style="display:none">
@@ -203,7 +221,7 @@ h1{font-size:14px;letter-spacing:.5px;line-height:1.15}
       <button id="btn_screen_open" class="primary">📺 开启追逐屏</button>
       <button id="btn_screen_close" class="ghost">关闭追逐屏</button>
     </div>
-    <div class="hint" style="margin-bottom:8px">追逐屏是小浮动窗（可拖动/缩放，不挡地图），会推给房间里的所有玩家。</div>
+    <div class="hint" style="margin-bottom:8px">追逐屏是可拖动/缩放的小浮窗，不挡地图；背景透明度可在浮窗顶栏调节。</div>
     <div id="ctrlSetup" class="row">
       <button id="btn_start" class="primary">🏁 掷先攻 · 开始</button>
       <button id="btn_clear" class="danger">清空</button>
