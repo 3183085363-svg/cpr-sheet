@@ -1,17 +1,17 @@
 {
   "name": "载具追逐 · CPR",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "manifest_version": 1,
-  "description": "基于 CPR《Hot Pursuit》的辅助追逐工具：图鉴载具模板、token 右键加入、回合与机动判定、地图 SDP 徽章，以及可拖动的三车道/真实仪表浮窗。",
+  "description": "基于 CPR《Hot Pursuit》的辅助追逐工具：图鉴模板、token 右键加入、回合判定、地图徽章，以及三车道/真实仪表同步窗口。",
   "author": "小汤圆 × 红豆包",
-  "background_url": "https://3183085363-svg.github.io/cpr-sheet/chase/background.html",
+  "background_url": "https://3183085363-svg.github.io/cpr-sheet/chase/background.html?v=0.5.0",
   "permissions": [
     { "name": "autoplay", "reason": "播放引擎轰鸣/撞击/警笛等合成音效" }
   ],
   "action": {
     "title": "载具追逐",
-    "icon": "https://3183085363-svg.github.io/cpr-sheet/chase/icon.png",
-    "popover": "https://3183085363-svg.github.io/cpr-sheet/chase/index.html",
+    "icon": "https://3183085363-svg.github.io/cpr-sheet/chase/icon.png?v=0.5.0",
+    "popover": "https://3183085363-svg.github.io/cpr-sheet/chase/index.html?v=0.5.0",
     "width": 460,
     "height": 720
   }

@@ -29,6 +29,8 @@ button,input{font-family:inherit}button{cursor:pointer}
 .alpha{display:flex;align-items:center;gap:4px;color:var(--dim);font-size:10px;white-space:nowrap}
 .alpha input{width:58px;height:3px;accent-color:var(--yel);cursor:pointer}
 .alpha output{width:26px;font-size:9px;font-variant-numeric:tabular-nums}
+#detach{background:var(--panel2);border:1px solid var(--cyn);color:var(--cyn);font-size:10px;padding:3px 7px;border-radius:5px;white-space:nowrap}
+#detach:hover{background:var(--cyn);color:#071013}
 #close{background:transparent;border:none;color:var(--dim);font-size:15px;padding:3px 5px;border-radius:5px}
 #close:hover{color:var(--red)}
 #stage{position:absolute;top:44px;left:0;right:0;bottom:0;overflow:hidden}
@@ -77,8 +79,8 @@ button,input{font-family:inherit}button{cursor:pointer}
 #eventBanner.show{opacity:1}#eventBanner.round{border-color:var(--cyn);color:var(--cyn)}#eventBanner.fail{border-color:var(--red);color:#ffb3ad}#eventBanner.sys,#eventBanner.info{color:var(--dim);border-color:var(--line)}
 .empty-state{position:absolute;inset:0;display:grid;place-items:center;color:var(--dim);font-size:13px;text-align:center;padding:20px}
 </style>
-  <script type="module" crossorigin src="./assets/display-DQrE6gfn.js"></script>
-  <link rel="modulepreload" crossorigin href="./assets/protocol-B7xRCCQP.js">
+  <script type="module" crossorigin src="./assets/display-CGGRSJFA.js"></script>
+  <link rel="modulepreload" crossorigin href="./assets/protocol-xlQ1mVd8.js">
   <link rel="modulepreload" crossorigin href="./assets/vehicle-shapes-DbjJ7Usc.js">
 </head>
 <body>
@@ -88,6 +90,7 @@ button,input{font-family:inherit}button{cursor:pointer}
     <div class="ttl">载具追逐</div><div class="pill" id="phasePill">未开始</div>
     <div class="views"><button id="viewRoad" class="on">公路</button><button id="viewHud">仪表</button></div>
     <label class="alpha" title="只调背景透明度，文字与指示物保持清晰">◐<input id="alpha" type="range" min="25" max="100" value="90" /><output id="alphaValue">90%</output></label>
+    <button id="detach" title="弹出真正的浏览器小窗，可自由拖动和缩放">↗ 独立窗口</button>
     <button id="close" title="关闭">✕</button>
   </div>
   <div id="stage">

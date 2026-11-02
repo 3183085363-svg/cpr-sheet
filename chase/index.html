@@ -122,6 +122,9 @@ h1{font-size:14px;letter-spacing:.5px;line-height:1.15}
 .mv button span{color:var(--dim);font-size:10px}
 .mv button:hover span{color:var(--yel)}
 .mv button:disabled span{color:var(--dim)}
+.mv-row{display:grid;grid-template-columns:1fr 27px;gap:3px;min-width:0}
+.mv-row .mv-fail{justify-content:center;padding:5px 0;color:var(--red);border-color:#5a292d;font-weight:700}
+.mv-row .mv-fail:hover:not(:disabled){background:#3a171b;border-color:var(--red)}
 .log{max-height:170px;overflow-y:auto;display:flex;flex-direction:column;gap:3px;font-size:11px;line-height:1.45}
 .log div{padding:4px 6px;border-radius:4px;background:#0e0e13;border-left:2px solid var(--line)}
 .log .ok{border-left-color:var(--grn)}
@@ -142,9 +145,9 @@ h1{font-size:14px;letter-spacing:.5px;line-height:1.15}
 ::-webkit-scrollbar-thumb{background:#2a2a35;border-radius:4px}
 ::-webkit-scrollbar-track{background:transparent}
 </style>
-  <script type="module" crossorigin src="./assets/main-CiUufIu9.js"></script>
-  <link rel="modulepreload" crossorigin href="./assets/protocol-B7xRCCQP.js">
-  <link rel="modulepreload" crossorigin href="./assets/templates-C02Z09pO.js">
+  <script type="module" crossorigin src="./assets/main-DiuzYaT2.js"></script>
+  <link rel="modulepreload" crossorigin href="./assets/protocol-xlQ1mVd8.js">
+  <link rel="modulepreload" crossorigin href="./assets/templates-Cgb1-en0.js">
   <link rel="modulepreload" crossorigin href="./assets/vehicle-shapes-DbjJ7Usc.js">
 </head>
 <body>
@@ -221,7 +224,7 @@ h1{font-size:14px;letter-spacing:.5px;line-height:1.15}
       <button id="btn_screen_open" class="primary">📺 开启追逐屏</button>
       <button id="btn_screen_close" class="ghost">关闭追逐屏</button>
     </div>
-    <div class="hint" style="margin-bottom:8px">追逐屏是可拖动/缩放的小浮窗，不挡地图；背景透明度可在浮窗顶栏调节。</div>
+    <div class="hint" style="margin-bottom:8px">枭熊小窗本身不支持拖缩；点追逐屏顶栏「↗ 独立窗口」即可自由拖动/缩放，数据仍会实时同步。</div>
     <div id="ctrlSetup" class="row">
       <button id="btn_start" class="primary">🏁 掷先攻 · 开始</button>
       <button id="btn_clear" class="danger">清空</button>
@@ -230,7 +233,7 @@ h1{font-size:14px;letter-spacing:.5px;line-height:1.15}
       <div class="field"><label>当前行动</label>
         <div class="row"><select id="f_actor"></select><select id="f_target"></select></div>
       </div>
-      <div class="field" style="margin-top:6px"><label>机动动作</label>
+      <div class="field" style="margin-top:6px"><label>机动动作 · 玩家先自行掷骰，再点结果（GM 可代点）</label>
         <div class="mv" id="mvList"></div>
       </div>
       <div class="row" style="margin-top:8px">
