@@ -1,17 +1,17 @@
 {
   "name": "载具追逐 · CPR",
-  "version": "0.8.1",
+  "version": "0.9.0",
   "manifest_version": 1,
   "description": "CPR《Hot Pursuit》辅助追逐：52 类载具指示物、图鉴模板、token 右键加入、外部先攻/掷骰，以及 50 款经典车 + 101 条 2077/CPR 图鉴的可交互驾驶仪表。",
   "author": "小汤圆 × 红豆包",
-  "background_url": "https://3183085363-svg.github.io/cpr-sheet/chase/background.html?v=0.8.1",
+  "background_url": "https://3183085363-svg.github.io/cpr-sheet/chase/background.html?v=0.9.0",
   "permissions": [
     { "name": "autoplay", "reason": "播放引擎轰鸣/撞击/警笛等合成音效" }
   ],
   "action": {
     "title": "载具追逐",
-    "icon": "https://3183085363-svg.github.io/cpr-sheet/chase/icon.png?v=0.8.1",
-    "popover": "https://3183085363-svg.github.io/cpr-sheet/chase/index.html?v=0.8.1",
+    "icon": "https://3183085363-svg.github.io/cpr-sheet/chase/icon.png?v=0.9.0",
+    "popover": "https://3183085363-svg.github.io/cpr-sheet/chase/index.html?v=0.9.0",
     "width": 460,
     "height": 720
   }
