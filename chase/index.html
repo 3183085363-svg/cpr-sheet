@@ -109,7 +109,7 @@ h1{font-size:14px;letter-spacing:.5px;line-height:1.15}
 .crow .ctoken{flex:0 0 25px;height:34px;display:grid;place-items:center}
 .crow .ctoken .vehicle-svg{width:25px;height:34px;filter:drop-shadow(0 2px 2px #000)}
 .cstyle{display:flex;align-items:center;gap:5px;margin-top:5px}
-.cstyle select{width:82px;padding:2px 4px;font-size:9px;height:22px}
+.cstyle select{width:112px;padding:2px 4px;font-size:9px;height:22px}
 .cstyle input[type=color]{width:24px;height:22px;padding:1px;cursor:pointer}
 .cstyle .tpl{font-size:9px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:125px}
 .iconbtn{background:transparent;border:none;color:var(--dim);padding:2px 4px;font-size:13px;line-height:1}
@@ -149,10 +149,10 @@ h1{font-size:14px;letter-spacing:.5px;line-height:1.15}
 ::-webkit-scrollbar-thumb{background:#2a2a35;border-radius:4px}
 ::-webkit-scrollbar-track{background:transparent}
 </style>
-  <script type="module" crossorigin src="./assets/main-eEqiSppx.js"></script>
-  <link rel="modulepreload" crossorigin href="./assets/protocol-DTp94GXZ.js">
-  <link rel="modulepreload" crossorigin href="./assets/templates-DyVqGaHX.js">
-  <link rel="modulepreload" crossorigin href="./assets/vehicle-shapes-DbjJ7Usc.js">
+  <script type="module" crossorigin src="./assets/main-zBDndXQR.js"></script>
+  <link rel="modulepreload" crossorigin href="./assets/vehicle-data-CXyuar6Z.js">
+  <link rel="modulepreload" crossorigin href="./assets/templates-CHD0siap.js">
+  <link rel="modulepreload" crossorigin href="./assets/sfx-BeP6aUEk.js">
 </head>
 <body>
 <div class="wrap">
@@ -236,9 +236,10 @@ h1{font-size:14px;letter-spacing:.5px;line-height:1.15}
     </div>
     <div class="hint" style="margin-bottom:8px">追逐屏是浮窗：开着时点技能、切地图都不会关掉；拖左上角 ⠿ 移动，拖右下角改大小，⌖ 复位。</div>
     <div id="ctrlSetup" class="row">
-      <button id="btn_start" class="primary">🏁 掷先攻 · 开始</button>
+      <button id="btn_start" class="primary">🏁 直接开始</button>
       <button id="btn_clear" class="danger">清空</button>
     </div>
+    <div class="hint">不在这里掷先攻：先攻与实际行动顺序交给角色卡插件 / 弗人；GM 可在“当前行动”中自由选人。</div>
     <div id="ctrlRun" style="display:none">
       <div class="field"><label>当前行动</label>
         <div class="row"><select id="f_actor"></select><select id="f_target"></select></div>
